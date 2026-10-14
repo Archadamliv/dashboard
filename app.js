@@ -2,8 +2,9 @@
    Adam Dashboard — runtime
    1. Theme toggle (persisted, prefers-color-scheme default)
    2. Live clock (Asia/Hong_Kong, ticks every second)
-   3. Live weather (Open-Meteo, no API key)
+   3. Live weather (Open-Meteo, no API key) — 15-min auto-refresh
    4. Render site cards from data.js
+   5. Pull-to-refresh (touch): re-fetches live data on release
    ============================================================ */
 (function () {
   'use strict';
@@ -144,7 +145,7 @@
   }
 
   function loadWeather() {
-    fetch(WEATHER_URL, { cache: 'no-store' })
+    return fetch(WEATHER_URL, { cache: 'no-store' })
       .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
       .then(setWeather)
       .catch(function (err) {
@@ -154,6 +155,12 @@
   }
   loadWeather();
   setInterval(loadWeather, 15 * 60 * 1000); /* refresh every 15 min */
+
+  /* Re-fetch live data (used by pull-to-refresh). */
+  function refreshLive() {
+    tick();
+    return loadWeather();
+  }
 
   /* ---------- 4. Render site cards ---------- */
   var sites = (window.SITES || []);
@@ -241,6 +248,83 @@
   var empty = document.getElementById('empty-note');
   if (empty && sites.length === 0) empty.hidden = false;
 
+  /* ---------- 5. Pull-to-refresh (touch devices) ---------- */
+  (function initPullToRefresh() {
+    var ptr = document.getElementById('ptr');
+    var ptrText = document.getElementById('ptr-text');
+    if (!ptr) return;
+
+    var THRESHOLD = 68;     /* drag distance that arms the refresh */
+    var MAX = 110;          /* visual ceiling */
+    var dragging = false;
+    var startY = 0;
+    var pull = 0;
+    var busy = false;
+
+    function atTop() {
+      return (window.pageYOffset || document.documentElement.scrollTop || 0) <= 0;
+    }
+    function setHeight(h) { ptr.style.height = Math.max(0, h) + 'px'; }
+    function label(t) { if (ptrText) ptrText.textContent = t; }
+
+    function onStart(e) {
+      if (busy || !atTop() || e.touches.length !== 1) { dragging = false; return; }
+      dragging = true;
+      startY = e.touches[0].clientY;
+      pull = 0;
+      ptr.classList.add('ptr-dragging');
+    }
+
+    function onMove(e) {
+      if (!dragging) return;
+      var dy = e.touches[0].clientY - startY;
+      if (dy <= 0) { setHeight(0); ptr.classList.remove('is-ready'); pull = 0; return; }
+      pull = Math.min(dy * 0.5, MAX);
+      setHeight(pull);
+      if (pull >= THRESHOLD) { ptr.classList.add('is-ready'); label('Release to refresh · 松手刷新'); }
+      else { ptr.classList.remove('is-ready'); label('Pull to refresh · 下拉刷新'); }
+    }
+
+    function finish() {
+      if (!dragging) return;
+      dragging = false;
+      ptr.classList.remove('ptr-dragging');
+      if (pull >= THRESHOLD) { run(); }
+      else { setHeight(0); ptr.classList.remove('is-ready'); }
+      pull = 0;
+    }
+
+    function run() {
+      busy = true;
+      ptr.classList.add('is-loading', 'is-ready');
+      setHeight(44);
+      label('Refreshing… · 刷新中');
+      Promise.resolve().then(refreshLive).then(function () {
+        label('Updated · 已更新');
+        setTimeout(function () {
+          busy = false;
+          ptr.classList.remove('is-loading', 'is-ready');
+          setHeight(0);
+          label('Pull to refresh · 下拉刷新');
+        }, 800);
+      });
+    }
+
+    document.addEventListener('touchstart', onStart, { passive: true });
+    document.addEventListener('touchmove', onMove, { passive: true });
+    document.addEventListener('touchend', finish, { passive: true });
+    document.addEventListener('touchcancel', function () {
+      if (!dragging) return;
+      dragging = false;
+      ptr.classList.remove('ptr-dragging');
+      setHeight(0); ptr.classList.remove('is-ready');
+      pull = 0;
+    }, { passive: true });
+
+    /* Expose for headless tests. */
+    window.__ptr = { run: run, threshold: THRESHOLD };
+  })();
+
   /* Expose a tiny hook for tests / console. */
-  window.__dashboard = { currentTheme: currentTheme, sites: sites };
+  window.__dashboard = { currentTheme: currentTheme, sites: sites, refresh: refreshLive };
 })();
