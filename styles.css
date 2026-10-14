@@ -560,6 +560,7 @@ main {
   padding: 3px var(--space-3); min-height: 30px; cursor: pointer;
 }
 .foot-btn:hover { color: var(--text); border-color: var(--text-faint); }
+.foot-status { font-size: var(--text-xs); color: var(--text-faint); }
 
 /* ---------- Entrance motion ---------- */
 .reveal { opacity: 0; transform: translateY(0.6rem); animation: reveal 0.5s var(--ease) forwards; }

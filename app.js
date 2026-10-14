@@ -214,6 +214,69 @@
     return (g && GROUPS[g]) ? g : (GROUPS[s.group] ? s.group : order[0]);
   }
 
+  /* ---- server-canonical layout (Cloudflare KV via /api/layout) ---- */
+  var FLAG_KEY = 'dash-custom';
+  var usingServer = false;
+  function hasLocalEdits() { try { return localStorage.getItem(FLAG_KEY) != null; } catch (e) { return false; } }
+  function persistLocal() {
+    saveJSON(ORDER_KEY, savedOrder);
+    saveJSON(CAT_KEY, catOverride);
+    saveJSON(HIDE_KEY, hiddenList);
+    try { localStorage.setItem(FLAG_KEY, '1'); } catch (e) {}
+  }
+  function clearLocalEdits() {
+    try {
+      localStorage.removeItem(ORDER_KEY); localStorage.removeItem(CAT_KEY);
+      localStorage.removeItem(HIDE_KEY); localStorage.removeItem(FLAG_KEY);
+    } catch (e) {}
+  }
+  function collectLayout() {
+    var o = {};
+    order.forEach(function (g) {
+      var grid = document.getElementById('grid-' + g);
+      if (grid) o[g] = Array.prototype.map.call(grid.querySelectorAll('.site-card'), function (c) { return c.getAttribute('data-url'); });
+    });
+    var hid = {};
+    hiddenList.forEach(function (u) { hid[u] = true; });
+    return { order: o, cat: catOverride, hidden: hid };
+  }
+  function say(t) { var s = document.getElementById('foot-status'); if (s) s.textContent = t; }
+  function publishLayout() {
+    var key = '';
+    try { key = localStorage.getItem('dashboard-db-key') || ''; } catch (e) {}
+    key = window.prompt('Publish key (DASHBOARD_PASSWORD) · 发布口令', key) || '';
+    if (!key) return;
+    try { localStorage.setItem('dashboard-db-key', key); } catch (e) {}
+    say('Publishing… · 发布中…');
+    fetch('/api/layout', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 'x-dash-key': key },
+      body: JSON.stringify(collectLayout())
+    }).then(function (r) {
+      return r.json().then(function (b) { return { s: r.status, b: b }; }).catch(function () { return { s: r.status }; });
+    }).then(function (res) {
+      if (res.s === 200) say('Published ✓ · 已发布');
+      else if (res.s === 401) say('Key rejected · 口令错误');
+      else if (res.s === 503) say('Server locked · 服务器未设口令');
+      else say('Failed (' + res.s + ') · 失败');
+    }).catch(function () { say('Network error · 网络错误'); });
+  }
+  function loadServerLayout() {
+    if (hasLocalEdits()) return Promise.resolve(false);
+    return fetch('/api/layout', { cache: 'no-store' })
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        var lay = d && d.layout;
+        if (!lay) return false;
+        savedOrder = lay.order || {};
+        catOverride = lay.cat || {};
+        hiddenList = Array.isArray(lay.hidden) ? lay.hidden.slice() : Object.keys(lay.hidden || {});
+        usingServer = true;
+        return true;
+      })
+      .catch(function () { return false; });
+  }
+
   function el(tag, cls, text) {
     var n = document.createElement(tag);
     if (cls) n.className = cls;
@@ -288,6 +351,7 @@
         if (g === base) delete catOverride[s.url];
         else catOverride[s.url] = g;
         saveJSON(CAT_KEY, catOverride);
+        persistLocal();
         renderGroups();
       });
       actions.appendChild(b);
@@ -299,7 +363,7 @@
       e.preventDefault(); e.stopPropagation();
       if (hidden) hiddenList = hiddenList.filter(function (u) { return u !== s.url; });
       else hiddenList.push(s.url);
-      saveJSON(HIDE_KEY, hiddenList);
+      persistLocal();
       renderGroups();
     });
     actions.appendChild(hb);
@@ -324,7 +388,8 @@
         return c.getAttribute('data-url');
       });
     });
-    try { localStorage.setItem(ORDER_KEY, JSON.stringify(map)); } catch (e) {}
+    savedOrder = map;
+    persistLocal();
   }
 
   function enableDrag(grid) {
@@ -456,7 +521,18 @@
     renderGroups();
   });
 
-  renderGroups();
+  var publishBtn = document.getElementById('publish-layout');
+  if (publishBtn) publishBtn.addEventListener('click', publishLayout);
+
+  var resetBtn = document.getElementById('reset-layout');
+  if (resetBtn) resetBtn.addEventListener('click', function () {
+    if (window.confirm('Discard local changes and use the server version? · 清除本机改动，改用服务器版本？')) {
+      clearLocalEdits();
+      doReload();
+    }
+  });
+
+  loadServerLayout().then(function () { renderGroups(); });
 
   var empty = document.getElementById('empty-note');
   if (empty && sites.length === 0) empty.hidden = false;

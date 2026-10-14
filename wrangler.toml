@@ -1,0 +1,7 @@
+name = "adam-dashboard"
+compatibility_date = "2024-11-01"
+pages_build_output_dir = "."
+
+[[kv_namespaces]]
+binding = "DASH_LAYOUT"
+id = "b927c14bea7a4162b8360217cf17817c"
