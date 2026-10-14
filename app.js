@@ -404,9 +404,6 @@
     handle.appendChild(el('span', 'grip', '⠿'));
     handle.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); });
     right.appendChild(handle);
-    var arrow = el('span', 'arrow', '↗');
-    arrow.setAttribute('aria-hidden', 'true');
-    right.appendChild(arrow);
     top.appendChild(right);
     a.appendChild(top);
 
@@ -421,25 +418,17 @@
       a.appendChild(desc);
     }
 
-    /* actions panel: move category + hide/unhide */
+    /* actions panel: share + hide/unhide */
     var actions = el('div', 'card-actions');
-    actions.appendChild(el('span', 'ca-label', 'Move · 移动'));
-    order.forEach(function (g) {
-      var gm = GROUPS[g] || { label: g, labelZh: '' };
-      var b = el('button', 'ca-move' + (g === effGroup ? ' is-cur' : ''));
-      b.type = 'button';
-      b.textContent = gm.labelZh || gm.label;
-      b.addEventListener('click', function (e) {
-        e.preventDefault(); e.stopPropagation();
-        var base = GROUPS[s.group] ? s.group : order[0];
-        if (g === base) delete catOverride[s.url];
-        else catOverride[s.url] = g;
-        saveJSON(CAT_KEY, catOverride);
-        persistLocal();
-        renderGroups();
-      });
-      actions.appendChild(b);
+    var shb = el('button', 'ca-share');
+    shb.type = 'button';
+    shb.textContent = 'Share · 分享';
+    shb.addEventListener('click', function (e) {
+      e.preventDefault(); e.stopPropagation();
+      openShare(s);
     });
+    actions.appendChild(shb);
+
     var hb = el('button', 'ca-hide');
     hb.type = 'button';
     hb.textContent = hidden ? 'Unhide · 取消隐藏' : 'Hide · 隐藏';
@@ -451,15 +440,6 @@
       renderGroups();
     });
     actions.appendChild(hb);
-
-    var shb = el('button', 'ca-share');
-    shb.type = 'button';
-    shb.textContent = 'Share · 分享';
-    shb.addEventListener('click', function (e) {
-      e.preventDefault(); e.stopPropagation();
-      openShare(s);
-    });
-    actions.appendChild(shb);
 
     a.appendChild(actions);
 
