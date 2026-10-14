@@ -251,10 +251,11 @@
     if (meta.badge) head.appendChild(el('span', 'group-badge', meta.badge));
     if (list.length) head.appendChild(el('span', 'group-count', list.length + (list.length === 1 ? ' item' : ' items')));
 
+    var startCollapsed = Object.prototype.hasOwnProperty.call(collapsed, g) ? collapsed[g] : true;
     var toggle = el('button', 'collapse-btn');
     toggle.type = 'button';
     toggle.setAttribute('aria-controls', grid.id);
-    toggle.setAttribute('aria-expanded', String(!collapsed[g]));
+    toggle.setAttribute('aria-expanded', String(!startCollapsed));
     toggle.setAttribute('aria-label', 'Collapse or expand section · 收起 / 展开');
     toggle.appendChild(el('span', 'chev', '▾'));
     toggle.addEventListener('click', function () {
@@ -265,7 +266,7 @@
     });
     head.appendChild(toggle);
 
-    if (collapsed[g]) section.classList.add('is-collapsed');
+    if (startCollapsed) section.classList.add('is-collapsed');
 
     section.appendChild(head);
     section.appendChild(grid);

@@ -22,15 +22,11 @@
 <script>
   /* Theme preflight — runs before paint to avoid a flash of the wrong theme. */
   (function () {
-    var theme = 'dark';
+    var theme = 'dark'; /* default is always dark */
     try {
       var stored = localStorage.getItem('dashboard-theme');
-      if (stored === 'light' || stored === 'dark') {
-        theme = stored;
-      } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
-        theme = 'light';
-      }
-    } catch (e) { /* storage blocked — keep default */ }
+      if (stored === 'light' || stored === 'dark') theme = stored;
+    } catch (e) { /* storage blocked — keep dark */ }
     document.documentElement.setAttribute('data-theme', theme);
   })();
 </script>
