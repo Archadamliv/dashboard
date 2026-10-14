@@ -24,6 +24,15 @@ window.SITES = [
     tag: "Research · 研究"
   },
   {
+    name: "Catchment Analysis · Isochrones & Population",
+    nameZh: "服务区分析 · 等时圈与人口（OVAL Advance）",
+    desc: "Isochrone and population catchment analysis (OVAL Advance).",
+    descZh: "等时圈与人口覆盖分析（OVAL Advance）。",
+    url: "https://ovaladvance-isochrone.vercel.app/",
+    group: "work",
+    tag: "Analysis · 分析"
+  },
+  {
     name: "Household Guide",
     nameZh: "家务手册",
     desc: "Mobile-first multi-page guide for running the household.",
