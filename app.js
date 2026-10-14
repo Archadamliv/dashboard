@@ -192,30 +192,27 @@
   var order = Object.keys(GROUPS);
   if (!order.length) order = ['default'];
 
-  var buckets = {};
-  order.forEach(function (k) { buckets[k] = []; });
-  sites.forEach(function (s) {
-    var g = GROUPS[s.group] ? s.group : order[0];
-    if (!buckets[g]) buckets[g] = [];
-    buckets[g].push(s);
-  });
-
-  /* Saved card order (persisted per group; user can drag to reorder). */
+  /* persisted state: order, category overrides, hidden, collapsed */
   var ORDER_KEY = 'dash-order';
-  var savedOrder = {};
-  try { savedOrder = JSON.parse(localStorage.getItem(ORDER_KEY) || '{}') || {}; } catch (e) { savedOrder = {}; }
-  order.forEach(function (g) {
-    var saved = savedOrder[g];
-    if (saved && saved.length) {
-      buckets[g].sort(function (a, b) {
-        var ia = saved.indexOf(a.url), ib = saved.indexOf(b.url);
-        if (ia < 0 && ib < 0) return 0;
-        if (ia < 0) return 1;
-        if (ib < 0) return -1;
-        return ia - ib;
-      });
-    }
-  });
+  var CAT_KEY = 'dash-cat';
+  var HIDE_KEY = 'dash-hidden';
+
+  function loadJSON(key, fb) {
+    try { var v = JSON.parse(localStorage.getItem(key) || 'null'); return v == null ? fb : v; }
+    catch (e) { return fb; }
+  }
+  function saveJSON(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch (e) {} }
+
+  var savedOrder = loadJSON(ORDER_KEY, {});
+  var catOverride = loadJSON(CAT_KEY, {});
+  var hiddenList = loadJSON(HIDE_KEY, []);
+  var showHidden = false;
+
+  function isHidden(url) { return hiddenList.indexOf(url) >= 0; }
+  function effectiveGroup(s) {
+    var g = catOverride[s.url];
+    return (g && GROUPS[g]) ? g : (GROUPS[s.group] ? s.group : order[0]);
+  }
 
   function el(tag, cls, text) {
     var n = document.createElement(tag);
@@ -224,22 +221,36 @@
     return n;
   }
 
-  function makeCard(s) {
+  function makeCard(s, effGroup) {
+    var hidden = isHidden(s.url);
     var a = el('a', 'site-card reveal');
     a.href = s.url;
     a.target = '_blank';
     a.rel = 'noopener noreferrer';
-    a.setAttribute('data-group', s.group);
+    a.setAttribute('data-group', effGroup);
     a.setAttribute('data-url', s.url);
     a.setAttribute('aria-label', s.name + ' — ' + (s.nameZh || '') + ' (opens in a new tab)');
+    if (hidden) a.classList.add('is-hidden-card');
 
     var top = el('div', 'card-top');
-    var meta = GROUPS[s.group];
+    var meta = GROUPS[effGroup];
     var fb = meta ? (meta.label + (meta.labelZh && meta.labelZh !== meta.label ? ' · ' + meta.labelZh : '')) : '';
     if (s.tag) top.appendChild(el('span', 'tag', s.tag));
     else if (fb) top.appendChild(el('span', 'tag', fb));
 
     var right = el('div', 'card-top-right');
+
+    /* per-card options menu (move category / hide) */
+    var menuBtn = el('button', 'card-menu-btn');
+    menuBtn.type = 'button';
+    menuBtn.setAttribute('aria-label', 'Options · 选项');
+    menuBtn.appendChild(el('span', 'dots', '⋯'));
+    menuBtn.addEventListener('click', function (e) {
+      e.preventDefault(); e.stopPropagation();
+      a.classList.toggle('is-menu-open');
+    });
+    right.appendChild(menuBtn);
+
     var handle = el('button', 'drag-handle');
     handle.type = 'button';
     handle.setAttribute('aria-label', 'Drag to reorder · 拖动排序');
@@ -262,6 +273,37 @@
       else if (s.descZh) desc.appendChild(el('span', 'desc-zh', s.descZh));
       a.appendChild(desc);
     }
+
+    /* actions panel: move category + hide/unhide */
+    var actions = el('div', 'card-actions');
+    actions.appendChild(el('span', 'ca-label', 'Move · 移动'));
+    order.forEach(function (g) {
+      var gm = GROUPS[g] || { label: g, labelZh: '' };
+      var b = el('button', 'ca-move' + (g === effGroup ? ' is-cur' : ''));
+      b.type = 'button';
+      b.textContent = gm.labelZh || gm.label;
+      b.addEventListener('click', function (e) {
+        e.preventDefault(); e.stopPropagation();
+        var base = GROUPS[s.group] ? s.group : order[0];
+        if (g === base) delete catOverride[s.url];
+        else catOverride[s.url] = g;
+        saveJSON(CAT_KEY, catOverride);
+        renderGroups();
+      });
+      actions.appendChild(b);
+    });
+    var hb = el('button', 'ca-hide');
+    hb.type = 'button';
+    hb.textContent = hidden ? 'Unhide · 取消隐藏' : 'Hide · 隐藏';
+    hb.addEventListener('click', function (e) {
+      e.preventDefault(); e.stopPropagation();
+      if (hidden) hiddenList = hiddenList.filter(function (u) { return u !== s.url; });
+      else hiddenList.push(s.url);
+      saveJSON(HIDE_KEY, hiddenList);
+      renderGroups();
+    });
+    actions.appendChild(hb);
+    a.appendChild(actions);
 
     return a;
   }
@@ -320,59 +362,101 @@
     grid.addEventListener('pointercancel', endDrag);
   }
 
-  var host = document.getElementById('groups');
-  order.forEach(function (g, gi) {
-    var meta = GROUPS[g] || { label: g, labelZh: '' };
-    var list = buckets[g] || [];
+  function renderGroups() {
+    var host = document.getElementById('groups');
+    if (!host) return;
+    host.innerHTML = '';
 
-    var section = el('section', 'group');
-    section.setAttribute('data-group', g);
-
-    var grid = el('div', 'grid');
-    grid.id = 'grid-' + g;
-    if (!list.length) {
-      grid.appendChild(el('p', 'group-empty', 'Coming soon · 待加入'));
-    } else {
-      list.forEach(function (s, i) {
-        var card = makeCard(s);
-        card.style.animationDelay = ((gi + i) * 60) + 'ms';
-        grid.appendChild(card);
-      });
-      enableDrag(grid);
-    }
-
-    var head = el('div', 'group-head');
-    var h2 = el('h2', null, meta.label);
-    if (meta.labelZh && meta.labelZh !== meta.label) {
-      h2.appendChild(document.createTextNode(' '));
-      h2.appendChild(el('span', 'zh', meta.labelZh));
-    }
-    head.appendChild(h2);
-    if (meta.badge) head.appendChild(el('span', 'group-badge', meta.badge));
-    if (list.length) head.appendChild(el('span', 'group-count', list.length + (list.length === 1 ? ' item' : ' items')));
-
-    var startCollapsed = Object.prototype.hasOwnProperty.call(collapsed, g) ? collapsed[g] : true;
-    var toggle = el('button', 'collapse-btn');
-    toggle.type = 'button';
-    toggle.setAttribute('aria-controls', grid.id);
-    toggle.setAttribute('aria-expanded', String(!startCollapsed));
-    toggle.setAttribute('aria-label', 'Collapse or expand section · 收起 / 展开');
-    toggle.appendChild(el('span', 'chev', '▾'));
-    toggle.addEventListener('click', function () {
-      var isCollapsed = section.classList.toggle('is-collapsed');
-      toggle.setAttribute('aria-expanded', String(!isCollapsed));
-      collapsed[g] = isCollapsed;
-      saveCollapsed();
+    /* bucket by effective group (skip hidden unless showing) */
+    var buckets = {};
+    order.forEach(function (k) { buckets[k] = []; });
+    sites.forEach(function (s) {
+      if (isHidden(s.url) && !showHidden) return;
+      var g = effectiveGroup(s);
+      if (!buckets[g]) buckets[g] = [];
+      buckets[g].push(s);
     });
-    head.appendChild(toggle);
+    order.forEach(function (g) {
+      var saved = savedOrder[g];
+      if (saved && saved.length) {
+        buckets[g].sort(function (a, b) {
+          var ia = saved.indexOf(a.url), ib = saved.indexOf(b.url);
+          if (ia < 0 && ib < 0) return 0;
+          if (ia < 0) return 1;
+          if (ib < 0) return -1;
+          return ia - ib;
+        });
+      }
+    });
 
-    if (startCollapsed) section.classList.add('is-collapsed');
+    order.forEach(function (g, gi) {
+      var meta = GROUPS[g] || { label: g, labelZh: '' };
+      var list = buckets[g] || [];
 
-    section.appendChild(head);
-    section.appendChild(grid);
+      var section = el('section', 'group');
+      section.setAttribute('data-group', g);
 
-    if (host) host.appendChild(section);
+      var grid = el('div', 'grid');
+      grid.id = 'grid-' + g;
+      if (!list.length) {
+        grid.appendChild(el('p', 'group-empty', 'Coming soon · 待加入'));
+      } else {
+        list.forEach(function (s, i) {
+          var card = makeCard(s, g);
+          card.style.animationDelay = ((gi + i) * 60) + 'ms';
+          grid.appendChild(card);
+        });
+        enableDrag(grid);
+      }
+
+      var head = el('div', 'group-head');
+      var h2 = el('h2', null, meta.label);
+      if (meta.labelZh && meta.labelZh !== meta.label) {
+        h2.appendChild(document.createTextNode(' '));
+        h2.appendChild(el('span', 'zh', meta.labelZh));
+      }
+      head.appendChild(h2);
+      if (meta.badge) head.appendChild(el('span', 'group-badge', meta.badge));
+      if (list.length) head.appendChild(el('span', 'group-count', list.length + (list.length === 1 ? ' item' : ' items')));
+
+      var startCollapsed = Object.prototype.hasOwnProperty.call(collapsed, g) ? collapsed[g] : true;
+      var cbtn = el('button', 'collapse-btn');
+      cbtn.type = 'button';
+      cbtn.setAttribute('aria-controls', grid.id);
+      cbtn.setAttribute('aria-expanded', String(!startCollapsed));
+      cbtn.setAttribute('aria-label', 'Collapse or expand section · 收起 / 展开');
+      cbtn.appendChild(el('span', 'chev', '▾'));
+      cbtn.addEventListener('click', function () {
+        var isCollapsed = section.classList.toggle('is-collapsed');
+        cbtn.setAttribute('aria-expanded', String(!isCollapsed));
+        collapsed[g] = isCollapsed;
+        saveCollapsed();
+      });
+      head.appendChild(cbtn);
+
+      if (startCollapsed) section.classList.add('is-collapsed');
+
+      section.appendChild(head);
+      section.appendChild(grid);
+      host.appendChild(section);
+    });
+
+    updateHiddenToggle();
+  }
+
+  function updateHiddenToggle() {
+    var btn = document.getElementById('hidden-toggle');
+    if (!btn) return;
+    btn.textContent = (showHidden ? 'Hide hidden · 收起已隐藏' : 'Show hidden · 显示已隐藏') + ' (' + hiddenList.length + ')';
+  }
+
+  var hiddenToggle = document.getElementById('hidden-toggle');
+  if (hiddenToggle) hiddenToggle.addEventListener('click', function () {
+    showHidden = !showHidden;
+    renderGroups();
   });
+
+  renderGroups();
 
   var empty = document.getElementById('empty-note');
   if (empty && sites.length === 0) empty.hidden = false;
