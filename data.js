@@ -113,5 +113,5 @@ window.SITES = [
 window.GROUPS = {
   work:     { label: "Work",             labelZh: "工作" },
   personal: { label: "Personal",         labelZh: "私人" },
-  research: { label: "Ongoing Research", labelZh: "发展中", badge: "Development" }
+  research: { label: "Ongoing Research", labelZh: "发展中" }
 };
