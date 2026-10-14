@@ -266,17 +266,17 @@ main {
 .group-head .group-count { margin-left: 0; order: 3; }
 
 .grid {
-  display: grid; gap: var(--space-4);
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+  display: grid; gap: var(--space-2);
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 11rem), 1fr));
 }
 
 .site-card {
   position: relative;
-  display: flex; flex-direction: column; gap: var(--space-3);
-  padding: var(--space-5);
+  display: flex; flex-direction: column; gap: var(--space-1);
+  padding: var(--space-2) var(--space-3);
   background: var(--surface-1);
   border: 1px solid var(--border);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-sm);
   box-shadow: var(--shadow);
   overflow: hidden;
   isolation: isolate;
@@ -284,7 +284,7 @@ main {
               background-color 180ms var(--ease);
 }
 .site-card::before {
-  content: ""; position: absolute; inset: 0 0 auto 0; height: 3px;
+  content: ""; position: absolute; inset: 0 0 auto 0; height: 2px;
   background: var(--card-accent, var(--accent));
   opacity: 0.9;
   z-index: 1;
@@ -304,22 +304,33 @@ main {
 .site-card[data-group="oval"]     { --card-accent: var(--oval); }
 
 .card-top { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); }
+.card-top-right { display: inline-flex; align-items: center; gap: var(--space-1); flex: none; }
+.drag-handle {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 18px; height: 18px; padding: 0;
+  font: inherit; font-size: 0.8rem; line-height: 1;
+  color: var(--text-faint); background: transparent; border: 0; border-radius: 4px;
+  cursor: grab; touch-action: none;
+}
+.drag-handle:hover { color: var(--text); background: var(--surface-2); }
+.drag-handle:active { cursor: grabbing; }
+.site-card.is-dragging { opacity: 0.6; border-color: var(--card-accent, var(--accent)); z-index: 2; }
 .tag {
-  font-size: var(--text-xs); font-weight: 600; letter-spacing: 0.03em;
+  font-size: 0.6rem; font-weight: 600; letter-spacing: 0.03em;
   color: var(--card-accent, var(--accent));
   background: color-mix(in oklch, var(--card-accent, var(--accent)) 14%, transparent);
-  padding: 2px var(--space-2); border-radius: var(--radius-pill);
+  padding: 1px var(--space-2); border-radius: var(--radius-pill);
   white-space: nowrap;
 }
 .arrow {
-  font-size: var(--text-base); color: var(--text-faint);
+  font-size: 0.8rem; color: var(--text-faint);
   transition: transform 180ms var(--ease), color 180ms var(--ease);
 }
 .site-card:hover .arrow { transform: translate(3px, -3px); color: var(--card-accent, var(--accent)); }
 
-.site-name { font-size: 1.1rem; font-weight: 600; letter-spacing: -0.01em; }
-.site-name-zh { font-size: var(--text-xs); color: var(--text-muted); font-weight: 500; }
-.site-desc { font-size: var(--text-sm); color: var(--text-muted); line-height: 1.55; }
+.site-name { font-size: 0.86rem; font-weight: 600; letter-spacing: -0.01em; }
+.site-name-zh { font-size: 0.66rem; color: var(--text-muted); font-weight: 500; }
+.site-desc { font-size: 0.7rem; color: var(--text-muted); line-height: 1.4; }
 .site-desc .desc-zh { color: var(--text-faint); }
 .site-url {
   margin-top: auto; padding-top: var(--space-2);

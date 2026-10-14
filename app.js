@@ -176,6 +176,23 @@
     buckets[g].push(s);
   });
 
+  /* Saved card order (persisted per group; user can drag to reorder). */
+  var ORDER_KEY = 'dash-order';
+  var savedOrder = {};
+  try { savedOrder = JSON.parse(localStorage.getItem(ORDER_KEY) || '{}') || {}; } catch (e) { savedOrder = {}; }
+  order.forEach(function (g) {
+    var saved = savedOrder[g];
+    if (saved && saved.length) {
+      buckets[g].sort(function (a, b) {
+        var ia = saved.indexOf(a.url), ib = saved.indexOf(b.url);
+        if (ia < 0 && ib < 0) return 0;
+        if (ia < 0) return 1;
+        if (ib < 0) return -1;
+        return ia - ib;
+      });
+    }
+  });
+
   function el(tag, cls, text) {
     var n = document.createElement(tag);
     if (cls) n.className = cls;
@@ -189,6 +206,7 @@
     a.target = '_blank';
     a.rel = 'noopener noreferrer';
     a.setAttribute('data-group', s.group);
+    a.setAttribute('data-url', s.url);
     a.setAttribute('aria-label', s.name + ' — ' + (s.nameZh || '') + ' (opens in a new tab)');
 
     var top = el('div', 'card-top');
@@ -196,9 +214,18 @@
     var fb = meta ? (meta.label + (meta.labelZh && meta.labelZh !== meta.label ? ' · ' + meta.labelZh : '')) : '';
     if (s.tag) top.appendChild(el('span', 'tag', s.tag));
     else if (fb) top.appendChild(el('span', 'tag', fb));
+
+    var right = el('div', 'card-top-right');
+    var handle = el('button', 'drag-handle');
+    handle.type = 'button';
+    handle.setAttribute('aria-label', 'Drag to reorder · 拖动排序');
+    handle.appendChild(el('span', 'grip', '⠿'));
+    handle.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); });
+    right.appendChild(handle);
     var arrow = el('span', 'arrow', '↗');
     arrow.setAttribute('aria-hidden', 'true');
-    top.appendChild(arrow);
+    right.appendChild(arrow);
+    top.appendChild(right);
     a.appendChild(top);
 
     a.appendChild(el('h3', 'site-name', s.name));
@@ -221,6 +248,54 @@
   try { collapsed = JSON.parse(localStorage.getItem(COLLAPSE_KEY) || '{}') || {}; } catch (e) { collapsed = {}; }
   function saveCollapsed() { try { localStorage.setItem(COLLAPSE_KEY, JSON.stringify(collapsed)); } catch (e) {} }
 
+  /* Drag-to-reorder within a group (pointer events: mouse + touch). */
+  function saveOrder() {
+    var map = {};
+    order.forEach(function (g) {
+      var grid = document.getElementById('grid-' + g);
+      if (!grid) return;
+      map[g] = Array.prototype.map.call(grid.querySelectorAll('.site-card'), function (c) {
+        return c.getAttribute('data-url');
+      });
+    });
+    try { localStorage.setItem(ORDER_KEY, JSON.stringify(map)); } catch (e) {}
+  }
+
+  function enableDrag(grid) {
+    var dragging = null;
+    grid.addEventListener('pointerdown', function (e) {
+      var handle = e.target && e.target.closest ? e.target.closest('.drag-handle') : null;
+      if (!handle) return;
+      var card = handle.closest('.site-card');
+      if (!card) return;
+      dragging = card;
+      card.classList.add('is-dragging');
+      if (handle.setPointerCapture) { try { handle.setPointerCapture(e.pointerId); } catch (err) {} }
+      e.preventDefault();
+    });
+    grid.addEventListener('pointermove', function (e) {
+      if (!dragging) return;
+      dragging.style.pointerEvents = 'none';
+      var under = document.elementFromPoint(e.clientX, e.clientY);
+      dragging.style.pointerEvents = '';
+      var over = under && under.closest ? under.closest('.site-card') : null;
+      if (!over || over === dragging || over.parentNode !== grid) return;
+      var r = over.getBoundingClientRect();
+      var after = (e.clientX - r.left) > r.width / 2;
+      if (after) grid.insertBefore(dragging, over.nextSibling);
+      else grid.insertBefore(dragging, over);
+    });
+    function endDrag() {
+      if (!dragging) return;
+      dragging.classList.remove('is-dragging');
+      dragging.style.pointerEvents = '';
+      dragging = null;
+      saveOrder();
+    }
+    grid.addEventListener('pointerup', endDrag);
+    grid.addEventListener('pointercancel', endDrag);
+  }
+
   var host = document.getElementById('groups');
   order.forEach(function (g, gi) {
     var meta = GROUPS[g] || { label: g, labelZh: '' };
@@ -239,6 +314,7 @@
         card.style.animationDelay = ((gi + i) * 60) + 'ms';
         grid.appendChild(card);
       });
+      enableDrag(grid);
     }
 
     var head = el('div', 'group-head');
