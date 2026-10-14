@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=8">
+<link rel="stylesheet" href="styles.css?v=9">
 <script>
   /* Theme preflight — runs before paint to avoid a flash of the wrong theme. */
   (function () {
@@ -301,6 +301,18 @@
     }
 
     /* ---------- boot ---------- */
+    /* Simplified static mirror (e.g., GitHub Pages): no server-side proxy here. */
+    if (/\.github\.io$/i.test(location.hostname) || location.protocol === 'file:') {
+      form.hidden = true;
+      list.hidden = true;
+      locked.hidden = false;
+      locked.innerHTML = '<strong>Vercel only · 仅 Vercel 版可用</strong><br>' +
+        'Notion management needs the server-side proxy, which GitHub Pages cannot run.<br>' +
+        '<span class="zh">Notion 管理需要服务端代理，GitHub Pages 无法运行；请在 Vercel 版使用。</span>';
+      badge.textContent = 'Mirror · 镜像';
+      badge.classList.remove('is-live');
+      return;
+    }
     var stored = getKey();
     if (stored) loadList(stored);
     else showForm('Enter the dashboard key to load Notion data.<br><span class="zh">输入 Dashboard 密钥以加载 Notion 数据。</span>', false);

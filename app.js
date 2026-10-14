@@ -463,6 +463,13 @@
   var refreshBtn = document.getElementById('refresh-btn');
   if (refreshBtn) refreshBtn.addEventListener('click', function () { hardRefresh(); });
 
+  /* Simplified static mirror (e.g., GitHub Pages): drop server-dependent bits. */
+  var STATIC_MIRROR = /\.github\.io$/i.test(location.hostname) || location.protocol === 'file:';
+  if (STATIC_MIRROR) {
+    var dbEntry = document.querySelector('.db-entry');
+    if (dbEntry && dbEntry.parentNode) dbEntry.parentNode.removeChild(dbEntry);
+  }
+
   /* Expose a tiny hook for tests / console. */
   window.__dashboard = { currentTheme: currentTheme, sites: sites, refresh: refreshLive, hardRefresh: hardRefresh };
 })();
