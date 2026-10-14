@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Adam Dashboard · Personal Hub</title>
-<meta name="description" content="Personal aggregation dashboard for Adam — Work and Personal sites, live Hong Kong clock and weather.">
+<meta name="description" content="Personal aggregation dashboard for Adam — project sites grouped by workstream, live Hong Kong clock and weather.">
 <meta name="color-scheme" content="dark light">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230ea5e9'/%3E%3Ctext x='16' y='23' font-size='19' font-family='Arial,sans-serif' font-weight='bold' text-anchor='middle' fill='white'%3EA%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -78,25 +78,23 @@
     </section>
 
     <!-- Site groups (rendered from data.js) -->
-    <section class="group" data-group="work">
-      <div class="group-head">
-        <h2>Work <span class="zh">工作</span></h2>
-        <span class="group-count" id="count-work"></span>
-      </div>
-      <div class="grid" id="grid-work"></div>
-    </section>
-
-    <section class="group" data-group="personal">
-      <div class="group-head">
-        <h2>Personal <span class="zh">私人</span></h2>
-        <span class="group-count" id="count-personal"></span>
-      </div>
-      <div class="grid" id="grid-personal"></div>
-    </section>
+    <div id="groups"></div>
 
     <p class="empty-note" id="empty-note" hidden>
       More entries coming · 更多条目稍后加入
     </p>
+
+    <!-- Database Management — separate page, linked from the bottom (content not shown on the homepage) -->
+    <section class="db-entry" aria-label="Database management · 数据库管理">
+      <a class="db-btn" href="database.html">
+        <span class="db-btn-icon" aria-hidden="true">🗄️</span>
+        <span class="db-btn-text">
+          <strong>Database Management</strong>
+          <small>数据库管理 · Notion 库接入与整理</small>
+        </span>
+        <span class="arrow" aria-hidden="true">→</span>
+      </a>
+    </section>
   </main>
 
   <footer class="foot">

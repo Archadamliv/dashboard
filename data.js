@@ -8,38 +8,39 @@
  *     desc:   "English description",   // one line, English
  *     descZh: "中文描述",              // one line, Chinese
  *     url:    "https://…",             // opens in a new tab
- *     group:  "work" | "personal",     // which section it lands in
+ *     group:  "trend" | "oval" | "personal",  // category key (see GROUPS)
  *     tag:    "Short label"            // small eyebrow tag (optional)
  *   }
- * The page renders automatically — no other file needs editing.
+ * The page renders automatically and groups entries by category —
+ * no other file needs editing. Section order = GROUPS key order.
  */
 window.SITES = [
   {
     name: "Culture Economy · Qianhai / Mawan",
     nameZh: "文化趋势研究 · 妈湾",
-    desc: "Cultural-trend research for Qianhai / Mawan.",
-    descZh: "妈湾文化趋势研究。",
+    desc: "Cultural-trend map for Qianhai / Mawan.",
+    descZh: "妈湾文化趋势地图。",
     url: "https://culture-trends-qianhai.vercel.app/",
-    group: "work",
-    tag: "Research · 研究"
-  },
-  {
-    name: "Catchment Analysis · Isochrones & Population",
-    nameZh: "服务区分析 · 等时圈与人口（OVAL Advance）",
-    desc: "Isochrone and population catchment analysis (OVAL Advance).",
-    descZh: "等时圈与人口覆盖分析（OVAL Advance）。",
-    url: "https://ovaladvance-isochrone.vercel.app/",
-    group: "work",
-    tag: "OVAL Advance"
+    group: "trend",
+    tag: "文化趋势 · Culture"
   },
   {
     name: "Resort Trends · S01",
     nameZh: "度假酒店趋势研究 · S01",
-    desc: "Resort / hospitality trend research (S01).",
-    descZh: "度假酒店趋势研究（S01）。",
+    desc: "Resort & hospitality trends (S01).",
+    descZh: "度假酒店趋势总览（S01）。",
     url: "https://s01-resort-trends.vercel.app/",
-    group: "work",
-    tag: "Research · 研究"
+    group: "trend",
+    tag: "度假酒店 · Resort"
+  },
+  {
+    name: "Catchment Analysis · Isochrones & Population",
+    nameZh: "服务区分析 · 等时圈与人口",
+    desc: "Isochrone and population catchment analysis.",
+    descZh: "等时圈与人口覆盖分析。",
+    url: "https://ovaladvance-isochrone.vercel.app/",
+    group: "oval",
+    tag: "Isochrone · 等时圈"
   },
   {
     name: "Household Guide",
@@ -52,8 +53,10 @@ window.SITES = [
   }
 ];
 
-/* Section metadata — labels are bilingual (English first, Chinese second). */
+/* Category metadata — labels are bilingual (English first, Chinese second).
+   Object order defines the on-page section order. */
 window.GROUPS = {
-  work:     { label: "Work",     labelZh: "工作" },
-  personal: { label: "Personal", labelZh: "私人" }
+  trend:    { label: "Trend Study",  labelZh: "趋势研究" },
+  oval:     { label: "OVAL Advance", labelZh: "OVAL Advance" },
+  personal: { label: "Personal",     labelZh: "私人" }
 };

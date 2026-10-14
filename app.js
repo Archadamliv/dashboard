@@ -157,10 +157,15 @@
 
   /* ---------- 4. Render site cards ---------- */
   var sites = (window.SITES || []);
-  var buckets = { work: [], personal: [] };
+  var GROUPS = window.GROUPS || {};
+  var order = Object.keys(GROUPS);
+  if (!order.length) order = ['default'];
 
+  var buckets = {};
+  order.forEach(function (k) { buckets[k] = []; });
   sites.forEach(function (s) {
-    var g = (s.group === 'personal') ? 'personal' : 'work';
+    var g = GROUPS[s.group] ? s.group : order[0];
+    if (!buckets[g]) buckets[g] = [];
     buckets[g].push(s);
   });
 
@@ -176,12 +181,14 @@
     a.href = s.url;
     a.target = '_blank';
     a.rel = 'noopener noreferrer';
-    a.setAttribute('data-group', s.group === 'personal' ? 'personal' : 'work');
+    a.setAttribute('data-group', s.group);
     a.setAttribute('aria-label', s.name + ' — ' + (s.nameZh || '') + ' (opens in a new tab)');
 
     var top = el('div', 'card-top');
+    var meta = GROUPS[s.group];
+    var fb = meta ? (meta.label + (meta.labelZh && meta.labelZh !== meta.label ? ' · ' + meta.labelZh : '')) : '';
     if (s.tag) top.appendChild(el('span', 'tag', s.tag));
-    else top.appendChild(el('span', 'tag', s.group === 'personal' ? 'Personal · 私人' : 'Work · 工作'));
+    else if (fb) top.appendChild(el('span', 'tag', fb));
     var arrow = el('span', 'arrow', '↗');
     arrow.setAttribute('aria-hidden', 'true');
     top.appendChild(arrow);
@@ -201,18 +208,34 @@
     return a;
   }
 
-  Object.keys(buckets).forEach(function (g) {
-    var grid = document.getElementById('grid-' + g);
-    var count = document.getElementById('count-' + g);
-    var list = buckets[g];
-    if (grid) {
-      list.forEach(function (s, i) {
-        var card = makeCard(s);
-        card.style.animationDelay = (i * 60) + 'ms';
-        grid.appendChild(card);
-      });
+  var host = document.getElementById('groups');
+  order.forEach(function (g, gi) {
+    var meta = GROUPS[g] || { label: g, labelZh: '' };
+    var list = buckets[g] || [];
+    if (!list.length) return; /* skip empty categories */
+
+    var section = el('section', 'group');
+    section.setAttribute('data-group', g);
+
+    var head = el('div', 'group-head');
+    var h2 = el('h2', null, meta.label);
+    if (meta.labelZh && meta.labelZh !== meta.label) {
+      h2.appendChild(document.createTextNode(' '));
+      h2.appendChild(el('span', 'zh', meta.labelZh));
     }
-    if (count) count.textContent = list.length + (list.length === 1 ? ' item' : ' items');
+    head.appendChild(h2);
+    head.appendChild(el('span', 'group-count', list.length + (list.length === 1 ? ' item' : ' items')));
+    section.appendChild(head);
+
+    var grid = el('div', 'grid');
+    list.forEach(function (s, i) {
+      var card = makeCard(s);
+      card.style.animationDelay = ((gi + i) * 60) + 'ms';
+      grid.appendChild(card);
+    });
+    section.appendChild(grid);
+
+    if (host) host.appendChild(section);
   });
 
   var empty = document.getElementById('empty-note');

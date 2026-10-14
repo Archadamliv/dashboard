@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Database Management · 数据库管理 — Adam Dashboard</title>
+<meta name="description" content="Database management for Adam — Notion database access and organization.">
+<meta name="color-scheme" content="dark light">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230ea5e9'/%3E%3Ctext x='16' y='23' font-size='19' font-family='Arial,sans-serif' font-weight='bold' text-anchor='middle' fill='white'%3EA%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<script>
+  /* Theme preflight — runs before paint to avoid a flash of the wrong theme. */
+  (function () {
+    var theme = 'dark';
+    try {
+      var stored = localStorage.getItem('dashboard-theme');
+      if (stored === 'light' || stored === 'dark') {
+        theme = stored;
+      } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+        theme = 'light';
+      }
+    } catch (e) { /* storage blocked — keep default */ }
+    document.documentElement.setAttribute('data-theme', theme);
+  })();
+</script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content · 跳到主内容</a>
+
+  <header class="topbar">
+    <div class="brand">
+      <a class="brand-mark" href="index.html" aria-label="Back to dashboard · 返回首页" title="Back · 返回">←</a>
+      <div class="brand-text">
+        <h1>Database Management</h1>
+        <p class="brand-sub">数据库管理 · Notion</p>
+      </div>
+    </div>
+    <button id="theme-toggle" class="theme-toggle" type="button"
+            aria-label="Switch color theme · 切换主题" aria-pressed="false">
+      <span class="tt-icon" aria-hidden="true">🌙</span>
+      <span class="tt-label">Dark</span>
+    </button>
+  </header>
+
+  <main id="main">
+    <section class="db-shell">
+      <div class="db-shell-head">
+        <h2>Notion Databases <span class="zh">Notion 数据库</span></h2>
+        <span class="db-badge">In progress · 建设中</span>
+      </div>
+      <p class="db-intro">
+        Central place to access and organize connected Notion databases.<br>
+        <span class="zh">集中接入与整理已连接的 Notion 数据库。</span>
+      </p>
+
+      <div class="db-grid">
+        <article class="db-tile">
+          <span class="db-tile-icon" aria-hidden="true">📚</span>
+          <h3>Browse · 浏览</h3>
+          <p>List your Notion databases and inspect their entries.<br><span class="zh">列出 Notion 库并查看条目。</span></p>
+        </article>
+        <article class="db-tile">
+          <span class="db-tile-icon" aria-hidden="true">🔎</span>
+          <h3>Search · 检索</h3>
+          <p>Query across databases by keyword, tag, or date.<br><span class="zh">按关键词 / 标签 / 日期跨库检索。</span></p>
+        </article>
+        <article class="db-tile">
+          <span class="db-tile-icon" aria-hidden="true">🧹</span>
+          <h3>Organize · 整理</h3>
+          <p>Rename, categorize, clean up, and migrate entries.<br><span class="zh">重命名、分类、清理与迁移条目。</span></p>
+        </article>
+      </div>
+
+      <p class="db-note">
+        This page is a placeholder shell — the live Notion integration (server-side proxy, login-protected) is the next step.<br>
+        <span class="zh">本页为占位骨架；实际的 Notion 接入（服务端代理 + 登录保护）为下一步。</span>
+      </p>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <span>Adam Dashboard · 私人聚合首页</span>
+    <span class="dot">·</span>
+    <a href="index.html">← Back to dashboard · 返回首页</a>
+  </footer>
+
+  <script>
+    /* Minimal theme toggle for this page (mirrors the homepage). */
+    (function () {
+      'use strict';
+      var KEY = 'dashboard-theme';
+      var root = document.documentElement;
+      var toggle = document.getElementById('theme-toggle');
+      var icon = toggle && toggle.querySelector('.tt-icon');
+      var label = toggle && toggle.querySelector('.tt-label');
+
+      function current() { return root.getAttribute('data-theme') === 'light' ? 'light' : 'dark'; }
+      function paint(t) {
+        var isLight = t === 'light';
+        if (icon) icon.textContent = isLight ? '☀️' : '🌙';
+        if (label) label.textContent = isLight ? 'Light' : 'Dark';
+        if (toggle) toggle.setAttribute('aria-pressed', String(isLight));
+      }
+      paint(current());
+      if (toggle) {
+        toggle.addEventListener('click', function () {
+          var next = current() === 'dark' ? 'light' : 'dark';
+          root.setAttribute('data-theme', next);
+          try { localStorage.setItem(KEY, next); } catch (e) {}
+          paint(next);
+        });
+      }
+    })();
+  </script>
+</body>
+</html>
