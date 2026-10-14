@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=14">
+<link rel="stylesheet" href="styles.css?v=15">
 <script>
   /* Theme preflight — runs before paint to avoid a flash of the wrong theme. */
   (function () {
@@ -67,26 +67,31 @@
   <main id="main">
     <!-- Live widgets -->
     <section class="widgets" aria-label="Live widgets · 实时信息">
-      <article class="card widget clock-widget">
+      <article class="card widget status-widget">
         <div class="widget-head">
-          <span class="widget-title">Local Time · 香港时间</span>
-          <span class="live-dot" title="Live · 实时" aria-hidden="true"></span>
+          <span class="widget-title">Time &amp; Weather · 时间与天气</span>
+          <span class="widget-head-right">
+            <span class="live-dot" title="Live · 实时" aria-hidden="true"></span>
+            <span class="weather-source" title="source: open-meteo.com">HK · Open-Meteo</span>
+          </span>
         </div>
-        <div class="clock-time" id="clock-time">--:--:--</div>
-        <div class="clock-date" id="clock-date">—</div>
-      </article>
-
-      <article class="card widget weather-widget">
-        <div class="widget-head">
-          <span class="widget-title">Hong Kong Weather · 香港天气</span>
-          <span class="weather-source" title="source: open-meteo.com">Open-Meteo</span>
-        </div>
-        <div class="weather-main">
-          <span class="weather-icon" id="w-icon" aria-hidden="true">⏳</span>
-          <div class="weather-readout">
-            <div class="weather-temp" id="w-temp">--<span class="unit">°C</span></div>
-            <div class="weather-cond" id="w-cond">Loading… · 加载中</div>
+        <div class="status-body">
+          <div class="status-clock">
+            <div class="clock-time" id="clock-time">--:--:--</div>
+            <div class="clock-date" id="clock-date">—</div>
           </div>
+          <div class="weather-main weather-widget status-weather">
+            <span class="weather-icon" id="w-icon" aria-hidden="true">⏳</span>
+            <div class="weather-readout">
+              <div class="weather-temp" id="w-temp">--<span class="unit">°C</span></div>
+              <div class="weather-cond" id="w-cond">Loading… · 加载中</div>
+            </div>
+          </div>
+        </div>
+        <div class="world-clocks" id="world-clocks" aria-label="World clocks · 世界时间">
+          <span class="wc"><span class="wc-city">Tokyo</span><span class="wc-t" id="wc-tokyo">--:--</span></span>
+          <span class="wc"><span class="wc-city">London</span><span class="wc-t" id="wc-london">--:--</span></span>
+          <span class="wc"><span class="wc-city">New York</span><span class="wc-t" id="wc-ny">--:--</span></span>
         </div>
         <div class="weather-meta">
           <span id="w-hilo">H --° / L --°</span>
@@ -125,7 +130,7 @@
     <span id="foot-status" class="foot-status"></span>
   </footer>
 
-  <script src="data.js?v=14"></script>
-  <script src="app.js?v=14"></script>
+  <script src="data.js?v=15"></script>
+  <script src="app.js?v=15"></script>
 </body>
 </html>

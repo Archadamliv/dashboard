@@ -38,28 +38,38 @@
     });
   }
 
-  /* ---------- 2. Live clock ---------- */
+  /* ---------- 2. Clocks: local (device tz) + world ---------- */
   var clockTime = document.getElementById('clock-time');
   var clockDate = document.getElementById('clock-date');
-  var timeFmt, dateFmt;
-
-  try {
-    timeFmt = new Intl.DateTimeFormat('en-GB', {
-      timeZone: HK_TZ, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
-    });
-    dateFmt = new Intl.DateTimeFormat('en-GB', {
-      timeZone: HK_TZ, weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
-    });
-  } catch (e) {
-    timeFmt = null; dateFmt = null;
+  function mkFmt(fmt, tz) {
+    try { return new Intl.DateTimeFormat('en-GB', tz ? Object.assign({ timeZone: tz }, fmt) : fmt); }
+    catch (e) { return null; }
   }
-
+  var timeFmt = mkFmt({ hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+  var dateFmt = mkFmt({ weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  var tzFmt = mkFmt({ hour: '2-digit', timeZoneName: 'short' });
+  var WORLD = [
+    { el: document.getElementById('wc-tokyo'), fmt: mkFmt({ hour: '2-digit', minute: '2-digit', hour12: false }, 'Asia/Tokyo') },
+    { el: document.getElementById('wc-london'), fmt: mkFmt({ hour: '2-digit', minute: '2-digit', hour12: false }, 'Europe/London') },
+    { el: document.getElementById('wc-ny'), fmt: mkFmt({ hour: '2-digit', minute: '2-digit', hour12: false }, 'America/New_York') }
+  ];
+  function tzLabel(now) {
+    try {
+      var parts = tzFmt.formatToParts(now);
+      for (var i = 0; i < parts.length; i++) if (parts[i].type === 'timeZoneName') return parts[i].value;
+    } catch (e) {}
+    return '';
+  }
   function tick() {
     var now = new Date();
     if (clockTime && timeFmt) clockTime.textContent = timeFmt.format(now);
     if (clockDate) {
       var d = dateFmt ? dateFmt.format(now) : now.toDateString();
-      clockDate.innerHTML = d + ' <span class="clock-zone">· HKT UTC+8</span>';
+      var z = tzLabel(now);
+      clockDate.innerHTML = d + (z ? ' <span class="clock-zone">· ' + z + '</span>' : '');
+    }
+    for (var i = 0; i < WORLD.length; i++) {
+      if (WORLD[i].el && WORLD[i].fmt) WORLD[i].el.textContent = WORLD[i].fmt.format(now);
     }
   }
   tick();
