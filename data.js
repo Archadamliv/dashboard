@@ -33,6 +33,15 @@ window.SITES = [
     tag: "OVAL Advance"
   },
   {
+    name: "Resort Trends · S01",
+    nameZh: "度假酒店趋势研究 · S01",
+    desc: "Resort / hospitality trend research (S01).",
+    descZh: "度假酒店趋势研究（S01）。",
+    url: "https://s01-resort-trends.vercel.app/",
+    group: "work",
+    tag: "Research · 研究"
+  },
+  {
     name: "Household Guide",
     nameZh: "家务手册",
     desc: "Mobile-first multi-page guide for running the household.",
