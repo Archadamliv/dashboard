@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Adam Dashboard · Personal Hub</title>
+<meta name="description" content="Personal aggregation dashboard for Adam — Work and Personal sites, live Hong Kong clock and weather.">
+<meta name="color-scheme" content="dark light">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230ea5e9'/%3E%3Ctext x='16' y='23' font-size='19' font-family='Arial,sans-serif' font-weight='bold' text-anchor='middle' fill='white'%3EA%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<script>
+  /* Theme preflight — runs before paint to avoid a flash of the wrong theme. */
+  (function () {
+    var theme = 'dark';
+    try {
+      var stored = localStorage.getItem('dashboard-theme');
+      if (stored === 'light' || stored === 'dark') {
+        theme = stored;
+      } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+        theme = 'light';
+      }
+    } catch (e) { /* storage blocked — keep default */ }
+    document.documentElement.setAttribute('data-theme', theme);
+  })();
+</script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content · 跳到主内容</a>
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">A</span>
+      <div class="brand-text">
+        <h1>Adam Dashboard</h1>
+        <p class="brand-sub">Personal Hub · 个人聚合首页</p>
+      </div>
+    </div>
+    <button id="theme-toggle" class="theme-toggle" type="button"
+            aria-label="Switch color theme · 切换主题" aria-pressed="false">
+      <span class="tt-icon" aria-hidden="true">🌙</span>
+      <span class="tt-label">Dark</span>
+    </button>
+  </header>
+
+  <main id="main">
+    <!-- Live widgets -->
+    <section class="widgets" aria-label="Live widgets · 实时信息">
+      <article class="card widget clock-widget">
+        <div class="widget-head">
+          <span class="widget-title">Local Time · 香港时间</span>
+          <span class="live-dot" title="Live · 实时" aria-hidden="true"></span>
+        </div>
+        <div class="clock-time" id="clock-time">--:--:--</div>
+        <div class="clock-date" id="clock-date">—</div>
+      </article>
+
+      <article class="card widget weather-widget">
+        <div class="widget-head">
+          <span class="widget-title">Hong Kong Weather · 香港天气</span>
+          <span class="weather-source" title="source: open-meteo.com">Open-Meteo</span>
+        </div>
+        <div class="weather-main">
+          <span class="weather-icon" id="w-icon" aria-hidden="true">⏳</span>
+          <div class="weather-readout">
+            <div class="weather-temp" id="w-temp">--<span class="unit">°C</span></div>
+            <div class="weather-cond" id="w-cond">Loading… · 加载中</div>
+          </div>
+        </div>
+        <div class="weather-meta">
+          <span id="w-hilo">H --° / L --°</span>
+          <span id="w-humidity">💧 --%</span>
+          <span id="w-wind">🌬 -- km/h</span>
+        </div>
+      </article>
+    </section>
+
+    <!-- Site groups (rendered from data.js) -->
+    <section class="group" data-group="work">
+      <div class="group-head">
+        <h2>Work <span class="zh">工作</span></h2>
+        <span class="group-count" id="count-work"></span>
+      </div>
+      <div class="grid" id="grid-work"></div>
+    </section>
+
+    <section class="group" data-group="personal">
+      <div class="group-head">
+        <h2>Personal <span class="zh">私人</span></h2>
+        <span class="group-count" id="count-personal"></span>
+      </div>
+      <div class="grid" id="grid-personal"></div>
+    </section>
+
+    <p class="empty-note" id="empty-note" hidden>
+      More entries coming · 更多条目稍后加入
+    </p>
+  </main>
+
+  <footer class="foot">
+    <span>Adam Dashboard · 私人聚合首页</span>
+    <span class="dot">·</span>
+    <span>Weather by Open-Meteo</span>
+  </footer>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
