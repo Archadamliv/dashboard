@@ -68,6 +68,15 @@ window.SITES = [
     url: "https://tavern-map.vercel.app/",
     group: "research",
     tag: "Ongoing · 进行中"
+  },
+  {
+    name: "Catchment Study · T0-1 · Dayun Tiandi",
+    nameZh: "服务区研究 · T0-1 · 大运天地",
+    desc: "Travel-time catchments and the population inside them (Longgang).",
+    descZh: "通勤等时圈与其覆盖人口研究（龙岗大运天地）。",
+    url: "https://t0-1-catchment-web.vercel.app/#cover",
+    group: "research",
+    tag: "Internal Research · 内部研究"
   }
 ];
 
