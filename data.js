@@ -59,6 +59,15 @@ window.SITES = [
     url: "https://story-of-days.vercel.app/",
     group: "personal",
     tag: "Journal · 日记"
+  },
+  {
+    name: "One Quarter · Tavern Map",
+    nameZh: "小酒馆地图",
+    desc: "Map exploration of taverns / bars.",
+    descZh: "小酒馆 / 酒吧地图探索。",
+    url: "https://tavern-map.vercel.app/",
+    group: "research",
+    tag: "Ongoing · 进行中"
   }
 ];
 
