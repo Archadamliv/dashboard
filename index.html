@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=20">
+<link rel="stylesheet" href="styles.css?v=21">
 <script>
   /* Theme preflight — runs before paint to avoid a flash of the wrong theme. */
   (function () {
@@ -141,7 +141,30 @@
     <span id="foot-status" class="foot-status"></span>
   </footer>
 
-  <script src="data.js?v=20"></script>
-  <script src="app.js?v=20"></script>
+  <!-- Share dialog -->
+  <div class="share-overlay" id="share-overlay" hidden>
+    <div class="share-dialog" role="dialog" aria-modal="true" aria-labelledby="share-title">
+      <h3 id="share-title">Share · 分享</h3>
+      <p class="share-target" id="share-target">—</p>
+      <label class="share-days-label">Valid for (days · max 31) · 有效期（天，最多 31）
+        <input class="share-days" id="share-days" type="number" min="1" max="31" step="1" value="3">
+      </label>
+      <div class="share-row">
+        <button class="db-action" id="share-generate" type="button">Generate link · 生成链接</button>
+        <button class="db-action ghost" id="share-close" type="button">Close · 关闭</button>
+      </div>
+      <div class="share-result" id="share-result" hidden>
+        <input class="share-link" id="share-link" type="text" readonly>
+        <div class="share-row">
+          <button class="db-action" id="share-copy" type="button">Copy · 复制</button>
+          <button class="db-action ghost" id="share-send" type="button">Send… · 发送…</button>
+        </div>
+      </div>
+      <p class="share-status" id="share-status"></p>
+    </div>
+  </div>
+
+  <script src="data.js?v=21"></script>
+  <script src="app.js?v=21"></script>
 </body>
 </html>

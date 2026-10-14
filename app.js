@@ -287,6 +287,80 @@
       .catch(function () { return false; });
   }
 
+  /* ---- share: create a time-limited link (KV-backed redirect) ---- */
+  function getKey(force) {
+    var k = '';
+    try { k = localStorage.getItem('dashboard-db-key') || ''; } catch (e) {}
+    if (!k || force) {
+      k = window.prompt('Key (DASHBOARD_PASSWORD) · 口令', k) || '';
+      if (k) { try { localStorage.setItem('dashboard-db-key', k); } catch (e) {} }
+    }
+    return k;
+  }
+  var shareTarget = null;
+  function openShare(s) {
+    shareTarget = s;
+    var ov = document.getElementById('share-overlay');
+    if (!ov) return;
+    var t = document.getElementById('share-target');
+    if (t) t.textContent = s.name + (s.nameZh ? ' · ' + s.nameZh : '');
+    var res = document.getElementById('share-result'); if (res) res.hidden = true;
+    var st = document.getElementById('share-status'); if (st) st.textContent = '';
+    var d = document.getElementById('share-days'); if (d) d.value = '3';
+    ov.hidden = false;
+  }
+  function closeShare() { var ov = document.getElementById('share-overlay'); if (ov) ov.hidden = true; }
+  function shareStatus(t) { var s = document.getElementById('share-status'); if (s) s.textContent = t; }
+  function generateShare() {
+    if (!shareTarget) return;
+    var key = getKey(false);
+    if (!key) return;
+    var daysEl = document.getElementById('share-days');
+    var days = parseInt(daysEl && daysEl.value, 10);
+    if (!isFinite(days) || days < 1) days = 3;
+    if (days > 31) days = 31;
+    if (daysEl) daysEl.value = String(days);
+    shareStatus('Generating… · 生成中…');
+    fetch('/api/share', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 'x-dash-key': key },
+      body: JSON.stringify({ url: shareTarget.url, days: days })
+    }).then(function (r) {
+      return r.json().then(function (b) { return { s: r.status, b: b }; }).catch(function () { return { s: r.status }; });
+    }).then(function (res) {
+      if (res.s === 200 && res.b && res.b.link) {
+        var box = document.getElementById('share-result'); if (box) box.hidden = false;
+        var li = document.getElementById('share-link'); if (li) li.value = res.b.link;
+        shareStatus('Valid ' + res.b.days + ' day(s) · 有效 ' + res.b.days + ' 天（到期自动失效）');
+      } else if (res.s === 401) shareStatus('Key rejected · 口令错误');
+      else if (res.s === 503) shareStatus('Server locked · 服务器未设口令');
+      else shareStatus('Failed (' + res.s + ') · 失败');
+    }).catch(function () { shareStatus('Network error · 网络错误'); });
+  }
+  function wireShareDialog() {
+    var ov = document.getElementById('share-overlay');
+    if (!ov) return;
+    var close = document.getElementById('share-close'); if (close) close.addEventListener('click', closeShare);
+    ov.addEventListener('click', function (e) { if (e.target === ov) closeShare(); });
+    var gen = document.getElementById('share-generate'); if (gen) gen.addEventListener('click', generateShare);
+    var cp = document.getElementById('share-copy');
+    if (cp) cp.addEventListener('click', function () {
+      var li = document.getElementById('share-link');
+      if (!li) return;
+      li.select();
+      try { document.execCommand('copy'); } catch (e) {}
+      if (navigator.clipboard) navigator.clipboard.writeText(li.value).catch(function () {});
+      shareStatus('Copied · 已复制');
+    });
+    var snd = document.getElementById('share-send');
+    if (snd) snd.addEventListener('click', function () {
+      var li = document.getElementById('share-link');
+      if (!li || !li.value) return;
+      if (navigator.share) { navigator.share({ title: 'Adam Dashboard', url: li.value }).catch(function () {}); }
+      else { try { window.location.href = 'mailto:?subject=' + encodeURIComponent('Dashboard link') + '&body=' + encodeURIComponent(li.value); } catch (e) {} }
+    });
+  }
+
   function el(tag, cls, text) {
     var n = document.createElement(tag);
     if (cls) n.className = cls;
@@ -377,6 +451,16 @@
       renderGroups();
     });
     actions.appendChild(hb);
+
+    var shb = el('button', 'ca-share');
+    shb.type = 'button';
+    shb.textContent = 'Share · 分享';
+    shb.addEventListener('click', function (e) {
+      e.preventDefault(); e.stopPropagation();
+      openShare(s);
+    });
+    actions.appendChild(shb);
+
     a.appendChild(actions);
 
     return a;
@@ -542,6 +626,7 @@
     }
   });
 
+  wireShareDialog();
   loadServerLayout().then(function () { renderGroups(); });
 
   var empty = document.getElementById('empty-note');
