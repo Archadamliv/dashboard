@@ -30,7 +30,7 @@ window.SITES = [
     descZh: "等时圈与人口覆盖分析（OVAL Advance）。",
     url: "https://ovaladvance-isochrone.vercel.app/",
     group: "work",
-    tag: "Analysis · 分析"
+    tag: "OVAL Advance"
   },
   {
     name: "Household Guide",
