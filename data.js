@@ -8,7 +8,7 @@
  *     desc:   "English description",   // one line, English
  *     descZh: "中文描述",              // one line, Chinese
  *     url:    "https://…",             // opens in a new tab
- *     group:  "trend" | "oval" | "personal",  // category key (see GROUPS)
+ *     group:  "work" | "personal" | "research",  // category key (see GROUPS)
  *     tag:    "Short label"            // small eyebrow tag (optional)
  *   }
  * The page renders automatically and groups entries by category —
@@ -21,8 +21,8 @@ window.SITES = [
     desc: "Cultural-trend map for Qianhai / Mawan.",
     descZh: "妈湾文化趋势地图。",
     url: "https://culture-trends-qianhai.vercel.app/",
-    group: "trend",
-    tag: "文化趋势 · Culture"
+    group: "work",
+    tag: "Trend Study · 趋势研究"
   },
   {
     name: "Resort Trends · S01",
@@ -30,8 +30,8 @@ window.SITES = [
     desc: "Resort & hospitality trends (S01).",
     descZh: "度假酒店趋势总览（S01）。",
     url: "https://s01-resort-trends.vercel.app/",
-    group: "trend",
-    tag: "度假酒店 · Resort"
+    group: "work",
+    tag: "Trend Study · 趋势研究"
   },
   {
     name: "Catchment Analysis · Isochrones & Population",
@@ -39,8 +39,8 @@ window.SITES = [
     desc: "Isochrone and population catchment analysis.",
     descZh: "等时圈与人口覆盖分析。",
     url: "https://ovaladvance-isochrone.vercel.app/",
-    group: "oval",
-    tag: "Isochrone · 等时圈"
+    group: "work",
+    tag: "OVAL Advance"
   },
   {
     name: "Household Guide",
@@ -54,9 +54,11 @@ window.SITES = [
 ];
 
 /* Category metadata — labels are bilingual (English first, Chinese second).
-   Object order defines the on-page section order. */
+   Object order defines the on-page section order.
+   Order: Work → Personal → Ongoing Research (research is deliberately last, kept
+   separate from work; it is the "Development" track that later feeds results). */
 window.GROUPS = {
-  trend:    { label: "Trend Study",  labelZh: "趋势研究" },
-  oval:     { label: "OVAL Advance", labelZh: "OVAL Advance" },
-  personal: { label: "Personal",     labelZh: "私人" }
+  work:     { label: "Work",             labelZh: "工作" },
+  personal: { label: "Personal",         labelZh: "私人" },
+  research: { label: "Ongoing Research", labelZh: "发展中", badge: "Development" }
 };

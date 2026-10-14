@@ -219,7 +219,6 @@
   order.forEach(function (g, gi) {
     var meta = GROUPS[g] || { label: g, labelZh: '' };
     var list = buckets[g] || [];
-    if (!list.length) return; /* skip empty categories */
 
     var section = el('section', 'group');
     section.setAttribute('data-group', g);
@@ -231,15 +230,20 @@
       h2.appendChild(el('span', 'zh', meta.labelZh));
     }
     head.appendChild(h2);
-    head.appendChild(el('span', 'group-count', list.length + (list.length === 1 ? ' item' : ' items')));
+    if (meta.badge) head.appendChild(el('span', 'group-badge', meta.badge));
+    if (list.length) head.appendChild(el('span', 'group-count', list.length + (list.length === 1 ? ' item' : ' items')));
     section.appendChild(head);
 
     var grid = el('div', 'grid');
-    list.forEach(function (s, i) {
-      var card = makeCard(s);
-      card.style.animationDelay = ((gi + i) * 60) + 'ms';
-      grid.appendChild(card);
-    });
+    if (!list.length) {
+      grid.appendChild(el('p', 'group-empty', 'Coming soon · 待加入'));
+    } else {
+      list.forEach(function (s, i) {
+        var card = makeCard(s);
+        card.style.animationDelay = ((gi + i) * 60) + 'ms';
+        grid.appendChild(card);
+      });
+    }
     section.appendChild(grid);
 
     if (host) host.appendChild(section);
