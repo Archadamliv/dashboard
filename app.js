@@ -162,6 +162,30 @@
     return loadWeather();
   }
 
+  /* Hard refresh: clear Cache Storage, then reload fresh (cache-busting).
+     This is the "refresh cache" behaviour Adam asked for. */
+  var _reloadDone = false;
+  function doReload() {
+    if (_reloadDone) return;
+    _reloadDone = true;
+    var u = new URL(window.location.href);
+    u.searchParams.set('_r', Date.now().toString(36));
+    window.location.replace(u.toString());
+  }
+  function hardRefresh() {
+    try {
+      if (window.caches && caches.keys) {
+        caches.keys()
+          .then(function (keys) { return Promise.all(keys.map(function (k) { return caches.delete(k); })); })
+          .catch(function () {})
+          .then(doReload);
+        setTimeout(doReload, 1500); /* fallback if Cache Storage hangs */
+        return;
+      }
+    } catch (e) { /* fall through */ }
+    doReload();
+  }
+
   /* ---------- 4. Render site cards ---------- */
   var sites = (window.SITES || []);
   var GROUPS = window.GROUPS || {};
@@ -403,16 +427,21 @@
       busy = true;
       ptr.classList.add('is-loading', 'is-ready');
       setHeight(44);
-      label('Refreshing… · 刷新中');
-      Promise.resolve().then(refreshLive).then(function () {
-        label('Updated · 已更新');
-        setTimeout(function () {
-          busy = false;
-          ptr.classList.remove('is-loading', 'is-ready');
-          setHeight(0);
-          label('Pull to refresh · 下拉刷新');
-        }, 800);
-      });
+      label('Refreshing cache… · 刷新缓存…');
+      hardRefresh(); /* clears cache + hard reload */
+      /* Fallback if navigation is blocked: just update live data. */
+      setTimeout(function () {
+        if (_reloadDone) return;
+        Promise.resolve().then(refreshLive).then(function () {
+          label('Updated · 已更新');
+          setTimeout(function () {
+            busy = false;
+            ptr.classList.remove('is-loading', 'is-ready');
+            setHeight(0);
+            label('Pull to refresh · 下拉刷新');
+          }, 800);
+        });
+      }, 1700);
     }
 
     document.addEventListener('touchstart', onStart, { passive: true });
@@ -430,6 +459,10 @@
     window.__ptr = { run: run, threshold: THRESHOLD };
   })();
 
+  /* Header refresh button (mouse + touch) — same cache-clearing refresh. */
+  var refreshBtn = document.getElementById('refresh-btn');
+  if (refreshBtn) refreshBtn.addEventListener('click', function () { hardRefresh(); });
+
   /* Expose a tiny hook for tests / console. */
-  window.__dashboard = { currentTheme: currentTheme, sites: sites, refresh: refreshLive };
+  window.__dashboard = { currentTheme: currentTheme, sites: sites, refresh: refreshLive, hardRefresh: hardRefresh };
 })();
