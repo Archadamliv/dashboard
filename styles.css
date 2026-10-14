@@ -335,6 +335,21 @@ main {
 .drag-handle:hover { color: var(--text); background: var(--surface-2); }
 .drag-handle:active { cursor: grabbing; }
 .site-card.is-dragging { opacity: 0.6; border-color: var(--card-accent, var(--accent)); z-index: 2; }
+.card-share {
+  font: inherit; font-size: 0.6rem; font-weight: 700; line-height: 1;
+  color: var(--accent); background: var(--accent-soft);
+  border: 1px solid color-mix(in oklch, var(--accent) 45%, transparent);
+  border-radius: var(--radius-pill); padding: 2px var(--space-2); cursor: pointer;
+}
+.card-share:hover { filter: brightness(1.12); }
+a.site-name {
+  display: block; font-family: var(--font-display);
+  font-size: 0.8rem; font-weight: 600; letter-spacing: -0.01em;
+  color: var(--text); text-decoration: none;
+}
+a.site-name:hover { color: var(--accent); }
+.card-details { display: none; }
+.site-card.is-expanded .card-details { display: block; }
 .card-menu-btn {
   display: inline-flex; align-items: center; justify-content: center;
   width: 24px; height: 24px; padding: 0;

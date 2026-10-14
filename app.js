@@ -370,13 +370,9 @@
 
   function makeCard(s, effGroup) {
     var hidden = isHidden(s.url);
-    var a = el('a', 'site-card reveal');
-    a.href = s.url;
-    a.target = '_blank';
-    a.rel = 'noopener noreferrer';
+    var a = el('div', 'site-card reveal');
     a.setAttribute('data-group', effGroup);
     a.setAttribute('data-url', s.url);
-    a.setAttribute('aria-label', s.name + ' — ' + (s.nameZh || '') + ' (opens in a new tab)');
     if (hidden) a.classList.add('is-hidden-card');
 
     var top = el('div', 'card-top');
@@ -387,7 +383,15 @@
 
     var right = el('div', 'card-top-right');
 
-    /* per-card options menu (move category / hide) */
+    /* Share — always visible */
+    var shareBtn = el('button', 'card-share');
+    shareBtn.type = 'button';
+    shareBtn.setAttribute('aria-label', 'Share · 分享');
+    shareBtn.textContent = '分享';
+    shareBtn.addEventListener('click', function (e) { e.stopPropagation(); openShare(s); });
+    right.appendChild(shareBtn);
+
+    /* ⋯ — second layer (hide/unhide) */
     var menuBtn = el('button', 'card-menu-btn');
     menuBtn.type = 'button';
     menuBtn.setAttribute('aria-label', 'Options · 选项');
@@ -407,28 +411,26 @@
     top.appendChild(right);
     a.appendChild(top);
 
-    a.appendChild(el('h3', 'site-name', s.name));
+    var nameLink = el('a', 'site-name', s.name);
+    nameLink.href = s.url;
+    nameLink.target = '_blank';
+    nameLink.rel = 'noopener noreferrer';
+    nameLink.addEventListener('click', function (e) { e.stopPropagation(); });
+    a.appendChild(nameLink);
     if (s.nameZh) a.appendChild(el('p', 'site-name-zh', s.nameZh));
 
-    /* One-line intro only: English, with the Chinese as a lighter tail. */
+    /* details — collapsed until the card is clicked */
+    var details = el('div', 'card-details');
     if (s.desc || s.descZh) {
       var desc = el('p', 'site-desc', s.desc || '');
       if (s.desc && s.descZh) desc.appendChild(el('span', 'desc-zh', ' · ' + s.descZh));
       else if (s.descZh) desc.appendChild(el('span', 'desc-zh', s.descZh));
-      a.appendChild(desc);
+      details.appendChild(desc);
     }
+    a.appendChild(details);
 
-    /* actions panel: share + hide/unhide */
+    /* actions panel (2nd layer, revealed by ⋯): hide/unhide only */
     var actions = el('div', 'card-actions');
-    var shb = el('button', 'ca-share');
-    shb.type = 'button';
-    shb.textContent = 'Share · 分享';
-    shb.addEventListener('click', function (e) {
-      e.preventDefault(); e.stopPropagation();
-      openShare(s);
-    });
-    actions.appendChild(shb);
-
     var hb = el('button', 'ca-hide');
     hb.type = 'button';
     hb.textContent = hidden ? 'Unhide · 取消隐藏' : 'Hide · 隐藏';
@@ -442,6 +444,12 @@
     actions.appendChild(hb);
 
     a.appendChild(actions);
+
+    /* click the card body (not its controls) to expand/collapse the details */
+    a.addEventListener('click', function (e) {
+      if (e.target.closest('button') || e.target.closest('a')) return;
+      a.classList.toggle('is-expanded');
+    });
 
     return a;
   }
