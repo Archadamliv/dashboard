@@ -26,7 +26,7 @@ window.SITES = [
     descZh: "妈湾文化趋势地图。",
     url: "https://culture-trends-qianhai.pages.dev/",
     group: "work",
-    tag: "Trend Study · 趋势研究"
+    tag: "T"
   },
   {
     name: "Resort Trends · S01",
@@ -35,7 +35,7 @@ window.SITES = [
     descZh: "度假酒店趋势总览（S01）。",
     url: "https://s01-resort-trends.pages.dev/",
     group: "work",
-    tag: "Trend Study · 趋势研究"
+    tag: "T"
   },
   {
     name: "Catchment Analysis · Isochrones & Population",
@@ -44,7 +44,7 @@ window.SITES = [
     descZh: "等时圈与人口覆盖分析。",
     url: "https://ovaladvance-isochrone.pages.dev/",
     group: "work",
-    tag: "OVAL Advance"
+    tag: "O"
   },
   {
     name: "CRL Sandbox v1",
@@ -53,7 +53,7 @@ window.SITES = [
     descZh: "CRL 沙盒应用（v1）。",
     url: "https://crl-sandbox-v1.pages.dev/",
     group: "work",
-    tag: "Sandbox · 沙盒"
+    tag: "S"
   },
 
   /* ---- Personal ---- */
@@ -64,7 +64,7 @@ window.SITES = [
     descZh: "家庭指南（带口令门）。",
     url: "https://household-guide.pages.dev/",
     group: "personal",
-    tag: "Guide · 手册"
+    tag: "G"
   },
   {
     name: "Story of Our DAYs",
@@ -73,7 +73,7 @@ window.SITES = [
     descZh: "记录日常的生活日记。",
     url: "https://story-of-days.pages.dev/",
     group: "personal",
-    tag: "Journal · 日记"
+    tag: "J"
   },
 
   /* ---- Ongoing Research ---- */
@@ -84,7 +84,7 @@ window.SITES = [
     descZh: "通勤等时圈与其覆盖人口研究（龙岗大运天地）。",
     url: "https://t0-1-catchment-web.pages.dev/",
     group: "research",
-    tag: "Internal Research · 内部研究"
+    tag: "R"
   },
   {
     name: "Catchment Study · P1 · Yangma Island",
@@ -93,7 +93,7 @@ window.SITES = [
     descZh: "通勤等时圈与其覆盖人口研究（养马岛）。",
     url: "https://p1-yangma-catchment-web.pages.dev/",
     group: "research",
-    tag: "Internal Research · 内部研究"
+    tag: "R"
   },
   {
     name: "One Quarter · Tavern Map",
@@ -102,7 +102,7 @@ window.SITES = [
     descZh: "小酒馆 / 酒吧地图探索。",
     url: "https://tavern-map.pages.dev/",
     group: "research",
-    tag: "Ongoing · 进行中"
+    tag: "R"
   }
 ];
 

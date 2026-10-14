@@ -579,6 +579,17 @@ main {
 .foot-btn:hover { color: var(--text); border-color: var(--text-faint); }
 .foot-status { font-size: var(--text-xs); color: var(--text-faint); }
 
+/* Legend for tag abbreviations */
+.legend {
+  display: flex; flex-wrap: wrap; align-items: center;
+  gap: var(--space-2) var(--space-4);
+  margin-top: var(--space-2);
+  font-size: var(--text-xs); color: var(--text-muted);
+}
+.legend-title { font-weight: 700; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.06em; }
+.legend-item { display: inline-flex; align-items: center; gap: var(--space-1); }
+.legend-item b { color: var(--accent); font-weight: 700; }
+
 /* ---------- Entrance motion ---------- */
 .reveal { opacity: 0; transform: translateY(0.6rem); animation: reveal 0.5s var(--ease) forwards; }
 @keyframes reveal { to { opacity: 1; transform: none; } }
