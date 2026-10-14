@@ -203,14 +203,14 @@
 
     a.appendChild(el('h3', 'site-name', s.name));
     if (s.nameZh) a.appendChild(el('p', 'site-name-zh', s.nameZh));
-    if (s.desc) a.appendChild(el('p', 'site-desc', s.desc));
-    if (s.descZh) a.appendChild(el('p', 'site-desc', s.descZh));
 
-    var host = '';
-    try { host = new URL(s.url).host; } catch (e) { host = s.url; }
-    var url = el('p', 'site-url', host);
-    url.title = s.url;
-    a.appendChild(url);
+    /* One-line intro only: English, with the Chinese as a lighter tail. */
+    if (s.desc || s.descZh) {
+      var desc = el('p', 'site-desc', s.desc || '');
+      if (s.desc && s.descZh) desc.appendChild(el('span', 'desc-zh', ' · ' + s.descZh));
+      else if (s.descZh) desc.appendChild(el('span', 'desc-zh', s.descZh));
+      a.appendChild(desc);
+    }
 
     return a;
   }
