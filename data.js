@@ -43,8 +43,8 @@ window.SITES = [
     desc: "Isochrone and population catchment analysis.",
     descZh: "等时圈与人口覆盖分析。",
     url: "https://ovaladvance-isochrone.pages.dev/",
-    group: "work",
-    tag: "O"
+    group: "research",
+    tag: "R"
   },
   {
     name: "CRL Sandbox v1",
