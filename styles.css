@@ -130,11 +130,16 @@ a { color: inherit; text-decoration: none; }
 
 /* ---------- Topbar ---------- */
 .topbar {
+  position: sticky; top: 0; z-index: 60;
   display: flex; align-items: center; justify-content: space-between; gap: var(--space-3);
   width: 100%; max-width: var(--maxw);
   margin-inline: auto;
   padding: calc(clamp(1.2rem, 0.7rem + 1.8vw, 2rem) + env(safe-area-inset-top, 0px))
            clamp(1rem, 0.4rem + 3.5vw, 2.5rem) var(--space-4);
+  background: color-mix(in oklch, var(--bg) 80%, transparent);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-soft);
 }
 .brand { display: flex; align-items: center; gap: var(--space-3); min-width: 0; }
 .brand-mark {
@@ -150,6 +155,7 @@ a { color: inherit; text-decoration: none; }
 .brand-text { min-width: 0; }
 .brand h1 { font-size: 1.05rem; font-weight: 600; letter-spacing: -0.01em; }
 .brand-sub { font-size: var(--text-xs); color: var(--text-muted); }
+img.brand-mark { display: block; object-fit: cover; background: none; }
 
 .theme-toggle {
   flex: none;
