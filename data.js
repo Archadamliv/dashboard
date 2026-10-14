@@ -50,6 +50,15 @@ window.SITES = [
     url: "https://household-guide-ten.vercel.app/",
     group: "personal",
     tag: "Guide · 手册"
+  },
+  {
+    name: "Story of Our DAYs",
+    nameZh: "我们的日子 · 日记",
+    desc: "A personal journal of days.",
+    descZh: "记录日常的生活日记。",
+    url: "https://story-of-days.vercel.app/",
+    group: "personal",
+    tag: "Journal · 日记"
   }
 ];
 
