@@ -20,7 +20,7 @@ window.SITES = [
     nameZh: "文化趋势研究 · 妈湾",
     desc: "Cultural-trend map for Qianhai / Mawan.",
     descZh: "妈湾文化趋势地图。",
-    url: "https://culture-trends-qianhai.vercel.app/",
+    url: "https://culture-trends-qianhai.pages.dev/",
     group: "work",
     tag: "Trend Study · 趋势研究"
   },
@@ -29,7 +29,7 @@ window.SITES = [
     nameZh: "度假酒店趋势研究 · S01",
     desc: "Resort & hospitality trends (S01).",
     descZh: "度假酒店趋势总览（S01）。",
-    url: "https://s01-resort-trends.vercel.app/",
+    url: "https://s01-resort-trends.pages.dev/",
     group: "work",
     tag: "Trend Study · 趋势研究"
   },
@@ -74,7 +74,16 @@ window.SITES = [
     nameZh: "服务区研究 · T0-1 · 大运天地",
     desc: "Travel-time catchments and the population inside them (Longgang).",
     descZh: "通勤等时圈与其覆盖人口研究（龙岗大运天地）。",
-    url: "https://t0-1-catchment-web.vercel.app/#cover",
+    url: "https://t0-1-catchment-web.pages.dev/",
+    group: "research",
+    tag: "Internal Research · 内部研究"
+  },
+  {
+    name: "Catchment Study · P1 · Yangma Island",
+    nameZh: "服务区研究 · P1 · 养马岛",
+    desc: "Travel-time catchments and the population inside them (Yangma Island).",
+    descZh: "通勤等时圈与其覆盖人口研究（养马岛）。",
+    url: "https://p1-yangma-catchment-web.pages.dev/",
     group: "research",
     tag: "Internal Research · 内部研究"
   }
