@@ -13,6 +13,9 @@
  *   }
  * The page renders automatically and groups entries by category —
  * no other file needs editing. Section order = GROUPS key order.
+ *
+ * NOTE (2026-10-14): only Cloudflare-hosted pages are live. The Vercel-only
+ * entries are commented out below — give them a Cloudflare URL to restore.
  */
 window.SITES = [
   {
@@ -33,6 +36,26 @@ window.SITES = [
     group: "work",
     tag: "Trend Study · 趋势研究"
   },
+  {
+    name: "Catchment Study · T0-1 · Dayun Tiandi",
+    nameZh: "服务区研究 · T0-1 · 大运天地",
+    desc: "Travel-time catchments and the population inside them (Longgang).",
+    descZh: "通勤等时圈与其覆盖人口研究（龙岗大运天地）。",
+    url: "https://t0-1-catchment-web.pages.dev/",
+    group: "research",
+    tag: "Internal Research · 内部研究"
+  },
+  {
+    name: "Catchment Study · P1 · Yangma Island",
+    nameZh: "服务区研究 · P1 · 养马岛",
+    desc: "Travel-time catchments and the population inside them (Yangma Island).",
+    descZh: "通勤等时圈与其覆盖人口研究（养马岛）。",
+    url: "https://p1-yangma-catchment-web.pages.dev/",
+    group: "research",
+    tag: "Internal Research · 内部研究"
+  }
+
+  /* --- Vercel-hosted — taken offline 2026-10-14 (add a Cloudflare URL to restore) ---
   {
     name: "Catchment Analysis · Isochrones & Population",
     nameZh: "服务区分析 · 等时圈与人口",
@@ -68,25 +91,8 @@ window.SITES = [
     url: "https://tavern-map.vercel.app/",
     group: "research",
     tag: "Ongoing · 进行中"
-  },
-  {
-    name: "Catchment Study · T0-1 · Dayun Tiandi",
-    nameZh: "服务区研究 · T0-1 · 大运天地",
-    desc: "Travel-time catchments and the population inside them (Longgang).",
-    descZh: "通勤等时圈与其覆盖人口研究（龙岗大运天地）。",
-    url: "https://t0-1-catchment-web.pages.dev/",
-    group: "research",
-    tag: "Internal Research · 内部研究"
-  },
-  {
-    name: "Catchment Study · P1 · Yangma Island",
-    nameZh: "服务区研究 · P1 · 养马岛",
-    desc: "Travel-time catchments and the population inside them (Yangma Island).",
-    descZh: "通勤等时圈与其覆盖人口研究（养马岛）。",
-    url: "https://p1-yangma-catchment-web.pages.dev/",
-    group: "research",
-    tag: "Internal Research · 内部研究"
   }
+  --- */
 ];
 
 /* Category metadata — labels are bilingual (English first, Chinese second).
