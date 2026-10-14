@@ -131,7 +131,7 @@ a { color: inherit; text-decoration: none; }
 /* ---------- Topbar ---------- */
 .topbar {
   position: sticky; top: 0; z-index: 60;
-  display: flex; align-items: center; justify-content: space-between; gap: var(--space-3);
+  display: flex; flex-direction: column; gap: var(--space-2); align-items: stretch;
   width: 100%; max-width: var(--maxw);
   margin-inline: auto;
   padding: calc(clamp(1.2rem, 0.7rem + 1.8vw, 2rem) + env(safe-area-inset-top, 0px))
@@ -141,6 +141,7 @@ a { color: inherit; text-decoration: none; }
   backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border-soft);
 }
+.topbar-row { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); }
 .brand { display: flex; align-items: center; gap: var(--space-3); min-width: 0; }
 .brand-mark {
   flex: none;
@@ -153,7 +154,7 @@ a { color: inherit; text-decoration: none; }
   box-shadow: var(--shadow);
 }
 .brand-text { min-width: 0; }
-.brand h1 { font-size: 1.05rem; font-weight: 600; letter-spacing: -0.01em; }
+.brand h1 { font-size: 0.98rem; font-weight: 600; letter-spacing: -0.01em; }
 .brand-sub { font-size: var(--text-xs); color: var(--text-muted); }
 img.brand-mark { display: block; object-fit: cover; background: none; }
 
@@ -582,9 +583,9 @@ main {
 /* Legend for tag abbreviations */
 .legend {
   display: flex; flex-wrap: wrap; align-items: center;
-  gap: var(--space-2) var(--space-4);
-  margin-top: var(--space-2);
-  font-size: var(--text-xs); color: var(--text-muted);
+  gap: var(--space-1) var(--space-3);
+  margin-top: 0;
+  font-size: 0.64rem; color: var(--text-muted);
 }
 .legend-title { font-weight: 700; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.06em; }
 .legend-item { display: inline-flex; align-items: center; gap: var(--space-1); }

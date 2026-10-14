@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=17">
+<link rel="stylesheet" href="styles.css?v=18">
 <script>
   /* Theme preflight — runs before paint to avoid a flash of the wrong theme. */
   (function () {
@@ -43,24 +43,36 @@
   <a class="skip-link" href="#main">Skip to content · 跳到主内容</a>
 
   <header class="topbar">
-    <div class="brand">
-      <img class="brand-mark" src="logo.svg" alt="" width="37" height="37" aria-hidden="true">
-      <div class="brand-text">
-        <h1>Adam Dashboard</h1>
-        <p class="brand-sub">Personal Hub · 个人聚合首页</p>
+    <div class="topbar-row">
+      <div class="brand">
+        <img class="brand-mark" src="logo.svg" alt="" width="37" height="37" aria-hidden="true">
+        <div class="brand-text">
+          <h1>Adam Dashboard</h1>
+          <p class="brand-sub">Personal Hub · 个人聚合首页</p>
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <button id="refresh-btn" class="theme-toggle" type="button"
+                aria-label="Refresh and clear cache · 刷新（清缓存）" title="Refresh (clear cache) · 刷新（清缓存）">
+          <span class="tt-icon" aria-hidden="true">↻</span>
+          <span class="tt-label">Refresh</span>
+        </button>
+        <button id="theme-toggle" class="theme-toggle" type="button"
+                aria-label="Switch color theme · 切换主题" aria-pressed="false">
+          <span class="tt-icon" aria-hidden="true">🌙</span>
+          <span class="tt-label">Dark</span>
+        </button>
       </div>
     </div>
-    <div class="topbar-actions">
-      <button id="refresh-btn" class="theme-toggle" type="button"
-              aria-label="Refresh and clear cache · 刷新（清缓存）" title="Refresh (clear cache) · 刷新（清缓存）">
-        <span class="tt-icon" aria-hidden="true">↻</span>
-        <span class="tt-label">Refresh</span>
-      </button>
-      <button id="theme-toggle" class="theme-toggle" type="button"
-              aria-label="Switch color theme · 切换主题" aria-pressed="false">
-        <span class="tt-icon" aria-hidden="true">🌙</span>
-        <span class="tt-label">Dark</span>
-      </button>
+    <!-- Legend for the tag abbreviations · 标签缩写说明 -->
+    <div class="legend" aria-label="Legend · 图例">
+      <span class="legend-title">Legend · 图例</span>
+      <span class="legend-item"><b>T</b> Trend Study · 趋势研究</span>
+      <span class="legend-item"><b>R</b> Research · 研究</span>
+      <span class="legend-item"><b>O</b> OVAL Advance</span>
+      <span class="legend-item"><b>S</b> Sandbox · 沙盒</span>
+      <span class="legend-item"><b>G</b> Guide · 指南</span>
+      <span class="legend-item"><b>J</b> Journal · 日记</span>
     </div>
   </header>
 
@@ -119,17 +131,6 @@
         <span class="arrow" aria-hidden="true">→</span>
       </a>
     </section>
-
-    <!-- Legend for the tag abbreviations · 标签缩写说明 -->
-    <section class="legend" aria-label="Legend · 图例">
-      <span class="legend-title">Legend · 图例</span>
-      <span class="legend-item"><b>T</b> Trend Study · 趋势研究</span>
-      <span class="legend-item"><b>R</b> Research · 研究</span>
-      <span class="legend-item"><b>O</b> OVAL Advance</span>
-      <span class="legend-item"><b>S</b> Sandbox · 沙盒</span>
-      <span class="legend-item"><b>G</b> Guide · 指南</span>
-      <span class="legend-item"><b>J</b> Journal · 日记</span>
-    </section>
   </main>
 
   <footer class="foot">
@@ -141,7 +142,7 @@
     <span id="foot-status" class="foot-status"></span>
   </footer>
 
-  <script src="data.js?v=17"></script>
-  <script src="app.js?v=17"></script>
+  <script src="data.js?v=18"></script>
+  <script src="app.js?v=18"></script>
 </body>
 </html>
