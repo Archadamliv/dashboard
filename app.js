@@ -215,6 +215,12 @@
     return a;
   }
 
+  /* Collapse state (persisted) */
+  var COLLAPSE_KEY = 'dash-collapsed';
+  var collapsed = {};
+  try { collapsed = JSON.parse(localStorage.getItem(COLLAPSE_KEY) || '{}') || {}; } catch (e) { collapsed = {}; }
+  function saveCollapsed() { try { localStorage.setItem(COLLAPSE_KEY, JSON.stringify(collapsed)); } catch (e) {} }
+
   var host = document.getElementById('groups');
   order.forEach(function (g, gi) {
     var meta = GROUPS[g] || { label: g, labelZh: '' };
@@ -222,6 +228,18 @@
 
     var section = el('section', 'group');
     section.setAttribute('data-group', g);
+
+    var grid = el('div', 'grid');
+    grid.id = 'grid-' + g;
+    if (!list.length) {
+      grid.appendChild(el('p', 'group-empty', 'Coming soon · 待加入'));
+    } else {
+      list.forEach(function (s, i) {
+        var card = makeCard(s);
+        card.style.animationDelay = ((gi + i) * 60) + 'ms';
+        grid.appendChild(card);
+      });
+    }
 
     var head = el('div', 'group-head');
     var h2 = el('h2', null, meta.label);
@@ -232,18 +250,24 @@
     head.appendChild(h2);
     if (meta.badge) head.appendChild(el('span', 'group-badge', meta.badge));
     if (list.length) head.appendChild(el('span', 'group-count', list.length + (list.length === 1 ? ' item' : ' items')));
-    section.appendChild(head);
 
-    var grid = el('div', 'grid');
-    if (!list.length) {
-      grid.appendChild(el('p', 'group-empty', 'Coming soon · 待加入'));
-    } else {
-      list.forEach(function (s, i) {
-        var card = makeCard(s);
-        card.style.animationDelay = ((gi + i) * 60) + 'ms';
-        grid.appendChild(card);
-      });
-    }
+    var toggle = el('button', 'collapse-btn');
+    toggle.type = 'button';
+    toggle.setAttribute('aria-controls', grid.id);
+    toggle.setAttribute('aria-expanded', String(!collapsed[g]));
+    toggle.setAttribute('aria-label', 'Collapse or expand section · 收起 / 展开');
+    toggle.appendChild(el('span', 'chev', '▾'));
+    toggle.addEventListener('click', function () {
+      var isCollapsed = section.classList.toggle('is-collapsed');
+      toggle.setAttribute('aria-expanded', String(!isCollapsed));
+      collapsed[g] = isCollapsed;
+      saveCollapsed();
+    });
+    head.appendChild(toggle);
+
+    if (collapsed[g]) section.classList.add('is-collapsed');
+
+    section.appendChild(head);
     section.appendChild(grid);
 
     if (host) host.appendChild(section);
