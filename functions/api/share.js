@@ -29,7 +29,7 @@ export async function onRequest(context) {
   if (!env.DASH_LAYOUT) return json(503, { error: 'no_kv_binding' });
   if (request.method !== 'POST') return json(405, { error: 'method_not_allowed' });
 
-  const password = ***;
+  const password = env.DASHBOARD_PASSWORD;
   if (!password) return json(503, { error: 'locked' });
   if (request.headers.get('x-dash-key') !== password) return json(401, { error: 'unauthorized' });
 
