@@ -4,7 +4,9 @@
    POST /api/share  { url, days }        → { link, expiresAt, days }
    Gated by DASHBOARD_PASSWORD (header x-dash-key).
    Stores a record under KV key "share:<token>" with expirationTtl
-   (auto-expires). /r/<token> then 302-redirects until it expires.
+   (auto-expires). The link is served by the separate `adam-share`
+   project, which PROXIES the page (no redirect) so the original URL
+   is never exposed and the expiry really bites.
    days: default 3, clamped to 1..31 (never longer than 31 days).
    ============================================================ */
 
@@ -50,5 +52,7 @@ export async function onRequest(context) {
   await env.DASH_LAYOUT.put('share:' + token, JSON.stringify({ url: url, exp: exp }), { expirationTtl: ttl });
 
   const origin = new URL(request.url).origin;
-  return json(200, { link: origin + '/r/' + token, expiresAt: exp, days: days });
+  void origin;
+  const shareBase = ((env && env.SHARE_BASE) || 'https://adam-share.pages.dev').replace(/\/+$/, '');
+  return json(200, { link: shareBase + '/r/' + token + '/', expiresAt: exp, days: days });
 }
