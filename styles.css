@@ -695,3 +695,18 @@ a.site-name:hover { color: var(--accent); }
 .life-promote:disabled, .life-promote.is-pending {
   color: var(--text-faint); background: transparent; border-color: var(--border); cursor: default;
 }
+
+/* ---- drag: pointer-following card + slot placeholder (FLIP moves) ---- */
+.drag-placeholder {
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-sm);
+  background: color-mix(in oklch, var(--accent) 7%, transparent);
+  transition: none;
+}
+.site-card.is-dragging {
+  opacity: 0.94;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.42);
+  border-color: var(--card-accent, var(--accent));
+  cursor: grabbing;
+  transition: none;
+}

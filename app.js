@@ -433,7 +433,7 @@
 
   function makeCard(s, effGroup) {
     var hidden = isHidden(s.url);
-    var a = el('div', 'site-card reveal');
+    var a = el('div', 'site-card' + (renderFirst ? ' reveal' : ''));
     a.setAttribute('data-group', effGroup);
     a.setAttribute('data-url', s.url);
     if (hidden) a.classList.add('is-hidden-card');
@@ -585,44 +585,128 @@
     persistLocal();
   }
 
-  function enableDrag(grid) {
-    var dragging = null;
-    grid.addEventListener('pointerdown', function (e) {
-      var handle = e.target && e.target.closest ? e.target.closest('.drag-handle') : null;
-      if (!handle) return;
-      var card = handle.closest('.site-card');
-      if (!card) return;
-      dragging = card;
-      card.classList.add('is-dragging');
-      if (handle.setPointerCapture) { try { handle.setPointerCapture(e.pointerId); } catch (err) {} }
-      e.preventDefault();
+  /* ---------- drag & drop: reorder inside a section, or move across sections ---------- */
+  var drag = null;            /* { card, ph, fromGroup, offX, offY, moved } */
+  var dragCollapsed = null;   /* section collapse state stashed during a drag */
+  var renderFirst = true;     /* entrance animation only on the very first render */
+
+  /* FLIP helpers — measure before a DOM change, animate after it */
+  function cardRects() {
+    var m = {};
+    document.querySelectorAll('#groups .site-card').forEach(function (c) {
+      if (c.classList.contains('is-dragging')) return;
+      var u = c.getAttribute('data-url');
+      if (!u) return;
+      var r = c.getBoundingClientRect();
+      m[u] = { x: r.left, y: r.top };
     });
-    grid.addEventListener('pointermove', function (e) {
-      if (!dragging) return;
-      dragging.style.pointerEvents = 'none';
-      var under = document.elementFromPoint(e.clientX, e.clientY);
-      dragging.style.pointerEvents = '';
-      var over = under && under.closest ? under.closest('.site-card') : null;
-      if (!over || over === dragging || over.parentNode !== grid) return;
-      var r = over.getBoundingClientRect();
-      var after = (e.clientX - r.left) > r.width / 2;
-      if (after) grid.insertBefore(dragging, over.nextSibling);
-      else grid.insertBefore(dragging, over);
-    });
-    function endDrag() {
-      if (!dragging) return;
-      dragging.classList.remove('is-dragging');
-      dragging.style.pointerEvents = '';
-      dragging = null;
-      saveOrder();
-    }
-    grid.addEventListener('pointerup', endDrag);
-    grid.addEventListener('pointercancel', endDrag);
+    return m;
   }
+  function flip(prev) {
+    if (!prev) return;
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    document.querySelectorAll('#groups .site-card').forEach(function (c) {
+      if (c.classList.contains('is-dragging')) return;
+      var u = c.getAttribute('data-url');
+      var b = u && prev[u];
+      if (!b) return;
+      var r = c.getBoundingClientRect();
+      var dx = b.x - r.left, dy = b.y - r.top;
+      if (Math.abs(dx) < 1 && Math.abs(dy) < 1) return;
+      try {
+        c.animate(
+          [{ transform: 'translate(' + dx + 'px,' + dy + 'px)' }, { transform: 'none' }],
+          { duration: 280, easing: 'cubic-bezier(.22,.61,.36,1)' }
+        );
+      } catch (e) {}
+    });
+  }
+
+  function placePlaceholder(x, y) {
+    if (!drag) return;
+    var under = document.elementFromPoint(x, y);
+    var over = under && under.closest ? under.closest('.site-card') : null;
+    if (over && over !== drag.card) {
+      var r = over.getBoundingClientRect();
+      var after = (x - r.left) > r.width / 2;
+      over.parentNode.insertBefore(drag.ph, after ? over.nextSibling : over);
+      return;
+    }
+    var grid = under && under.closest ? under.closest('.grid') : null;
+    if (grid && drag.ph.parentNode !== grid) grid.appendChild(drag.ph);
+  }
+
+  document.addEventListener('pointerdown', function (e) {
+    var handle = e.target && e.target.closest ? e.target.closest('.drag-handle') : null;
+    if (!handle || drag) return;
+    var card = handle.closest('.site-card');
+    if (!card) return;
+    var r = card.getBoundingClientRect();
+    var ph = el('div', 'drag-placeholder');
+    ph.style.width = r.width + 'px';
+    ph.style.height = r.height + 'px';
+    card.parentNode.insertBefore(ph, card);
+    card.classList.add('is-dragging');
+    card.style.position = 'fixed';
+    card.style.left = r.left + 'px';
+    card.style.top = r.top + 'px';
+    card.style.width = r.width + 'px';
+    card.style.height = r.height + 'px';
+    card.style.zIndex = '900';
+    card.style.margin = '0';
+    card.style.pointerEvents = 'none';
+    drag = { card: card, ph: ph, fromGroup: card.getAttribute('data-group'), offX: e.clientX - r.left, offY: e.clientY - r.top, moved: false };
+    /* open every section so any grid can be a drop target */
+    dragCollapsed = {};
+    document.querySelectorAll('section.group').forEach(function (s) {
+      dragCollapsed[s.getAttribute('data-group')] = s.classList.contains('is-collapsed');
+      s.classList.remove('is-collapsed');
+    });
+    if (handle.setPointerCapture) { try { handle.setPointerCapture(e.pointerId); } catch (err) {} }
+    e.preventDefault();
+  }, true);
+
+  document.addEventListener('pointermove', function (e) {
+    if (!drag) return;
+    drag.moved = true;
+    drag.card.style.left = (e.clientX - drag.offX) + 'px';
+    drag.card.style.top = (e.clientY - drag.offY) + 'px';
+    var prev = cardRects();
+    placePlaceholder(e.clientX, e.clientY);
+    flip(prev);
+  }, true);
+
+  function endDrag() {
+    if (!drag) return;
+    var d = drag;
+    drag = null;
+    var ph = d.ph, card = d.card;
+    if (ph.parentNode) ph.parentNode.insertBefore(card, ph);
+    if (ph.parentNode) ph.parentNode.removeChild(ph);
+    card.classList.remove('is-dragging');
+    ['position', 'left', 'top', 'width', 'height', 'zIndex', 'margin', 'pointerEvents'].forEach(function (k) { card.style[k] = ''; });
+    var grid = card.parentNode;
+    var toGroup = grid && grid.id ? grid.id.replace(/^grid-/, '') : null;
+    if (dragCollapsed) {
+      document.querySelectorAll('section.group').forEach(function (s) {
+        if (dragCollapsed[s.getAttribute('data-group')]) s.classList.add('is-collapsed');
+      });
+      dragCollapsed = null;
+    }
+    var url = card.getAttribute('data-url');
+    if (d.moved && url && toGroup) {
+      if (toGroup !== d.fromGroup) { catOverride[url] = toGroup; persistLocal(); }
+      saveOrder();
+      renderGroups();
+    }
+  }
+  document.addEventListener('pointerup', endDrag, true);
+  document.addEventListener('pointercancel', endDrag, true);
 
   function renderGroups() {
     var host = document.getElementById('groups');
     if (!host) return;
+    var prevRects = cardRects();
     host.innerHTML = '';
 
     /* bucket by effective group (skip hidden unless showing) */
@@ -664,7 +748,6 @@
           card.style.animationDelay = ((gi + i) * 60) + 'ms';
           grid.appendChild(card);
         });
-        enableDrag(grid);
       }
 
       var head = el('div', 'group-head');
@@ -700,6 +783,8 @@
     });
 
     updateHiddenToggle();
+    renderFirst = false;
+    flip(prevRects);
   }
 
   function updateHiddenToggle() {
