@@ -439,14 +439,15 @@
     if (hidden) a.classList.add('is-hidden-card');
 
     var top = el('div', 'card-top');
+    var left = el('div', 'card-top-left');
     var meta = GROUPS[effGroup];
     var fb = meta ? (meta.label + (meta.labelZh && meta.labelZh !== meta.label ? ' · ' + meta.labelZh : '')) : '';
-    if (s.tag) top.appendChild(el('span', 'tag', s.tag));
-    else if (fb) top.appendChild(el('span', 'tag', fb));
+    if (s.tag) left.appendChild(el('span', 'tag', s.tag));
+    else if (fb) left.appendChild(el('span', 'tag', fb));
 
     /* lifecycle chip (TEMP / STABLE) */
     var chip = lifeChip(s);
-    if (chip) top.appendChild(chip);
+    if (chip) left.appendChild(chip);
 
     /* 固化 · Promote — only for temp pages; turns the link permanent */
     if (s.status === 'temp') {
@@ -459,8 +460,9 @@
         ? '已发送固化请求，等我处理 · request sent, waiting for the agent'
         : '固化：把这个临时页变成永久（同一链接不再过期）· make this link permanent';
       pbtn.addEventListener('click', function (e) { e.stopPropagation(); requestPromote(s, pbtn); });
-      top.appendChild(pbtn);
+      left.appendChild(pbtn);
     }
+    top.appendChild(left);
 
     var right = el('div', 'card-top-right');
 

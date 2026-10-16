@@ -323,8 +323,9 @@ main {
 .site-card[data-group="trend"]    { --card-accent: var(--trend); }
 .site-card[data-group="oval"]     { --card-accent: var(--oval); }
 
-.card-top { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); }
-.card-top-right { display: inline-flex; align-items: center; gap: var(--space-1); flex: none; }
+.card-top { display: flex; align-items: center; flex-wrap: wrap; row-gap: 4px; gap: var(--space-2); }
+.card-top-left { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; min-width: 0; flex: 1 1 auto; }
+.card-top-right { display: inline-flex; align-items: center; gap: var(--space-1); flex: 0 0 auto; margin-left: auto; }
 .drag-handle {
   display: inline-flex; align-items: center; justify-content: center;
   width: 28px; height: 28px; padding: 0;
@@ -662,6 +663,11 @@ a.site-name:hover { color: var(--accent); }
   .group-head h2 { font-size: var(--text-lg); }
   .group-count { display: none; }
   .db-card-meta { display: none; }
+  /* one card per row, otherwise the card top row cannot fit its controls */
+  .grid { grid-template-columns: 1fr; }
+  .life, .life-promote, .card-share { font-size: 0.5rem; padding: 1px 5px; }
+  .tag { font-size: 0.5rem; }
+  .card-menu-btn, .drag-handle { width: 22px; height: 22px; }
 }
 
 /* ---- lifecycle chip (TEMP / STABLE) + move control ---- */
