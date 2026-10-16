@@ -250,6 +250,27 @@
     hiddenList.forEach(function (u) { hid[u] = true; });
     return { order: o, cat: catOverride, hidden: hid };
   }
+  /* ---------- auto-publish: push the layout to the server after every change ---------- */
+  var autoPublishing = false;
+  function publishSilent() {
+    var key = '';
+    try { key = localStorage.getItem('dashboard-db-key') || ''; } catch (e) {}
+    if (!key || autoPublishing) return;   /* no cached key → the manual button prompts */
+    autoPublishing = true;
+    say('Syncing… · 同步中…');
+    fetch('/api/layout', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 'x-dash-key': key },
+      body: JSON.stringify(collectLayout())
+    }).then(function (r) {
+      autoPublishing = false;
+      if (r.status === 200) say('Synced ✓ · 已同步');
+      else if (r.status === 401) say('口令错误 · key rejected');
+      else if (r.status === 503) say('该地址未设口令 · no password on this host');
+      else say('Sync failed (' + r.status + ') · 同步失败');
+    }).catch(function () { autoPublishing = false; say('网络错误 · network error'); });
+  }
+
   function say(t) { var s = document.getElementById('foot-status'); if (s) s.textContent = t; }
   function publishLayout() {
     var key = '';
@@ -297,22 +318,31 @@
     }
     return k;
   }
-  /* Open a site. Gated origins require a signed owner token (?k=…) which is
-     minted server-side, so the public page never carries any secret. */
+  /* Open a site. Gated origins need a signed owner token (?k=…) minted server-side.
+     The tab is opened synchronously (inside the click) so mobile popup blockers
+     do not eat it; failures now say *why* instead of silently landing on a 403. */
   function openSite(s) {
+    var tab = null;
+    try { tab = window.open('about:blank', '_blank'); } catch (e) { tab = null; }
+    function go(url) {
+      if (tab) { try { tab.location.href = url; return; } catch (e) {} }
+      window.location.href = url;
+    }
     var key = getKey(false);
-    if (!key) { window.open(s.url, '_blank', 'noopener'); return; }
+    if (!key) { go(s.url); return; }
     fetch('/api/unlock', {
       method: 'POST',
       headers: { 'content-type': 'application/json', 'x-dash-key': key },
       body: JSON.stringify({ url: s.url })
-    }).then(function (r) { return r.ok ? r.json() : null; })
-      .then(function (b) {
-        var url = (b && b.link) || s.url;
-        var w = window.open(url, '_blank', 'noopener');
-        if (!w) location.href = url;
+    }).then(function (r) { return r.json().then(function (b) { return { s: r.status, b: b }; }).catch(function () { return { s: r.status }; }); })
+      .then(function (res) {
+        if (res.s === 200 && res.b && res.b.link) { go(res.b.link); return; }
+        if (res.s === 401) { try { localStorage.removeItem('dashboard-db-key'); } catch (e) {} say('口令错误：已清除，请再点一次并重新输入 · key cleared'); }
+        else if (res.s === 503) say('这个地址未设口令 → 请用旧地址，或先补密钥 · no password on this host');
+        else say('解锁失败 (' + res.s + ') · unlock failed');
+        go(s.url);
       })
-      .catch(function () { window.open(s.url, '_blank', 'noopener'); });
+      .catch(function () { say('网络错误 · network error'); go(s.url); });
   }
 
   var shareTarget = null;
@@ -538,6 +568,7 @@
       catOverride[s.url] = sel.value;
       persistLocal();
       renderGroups();
+      publishSilent();
     });
     moveWrap.appendChild(sel);
     actions.appendChild(moveWrap);
@@ -551,6 +582,7 @@
       else hiddenList.push(s.url);
       persistLocal();
       renderGroups();
+      publishSilent();
     });
     actions.appendChild(hb);
 
@@ -698,6 +730,7 @@
       if (toGroup !== d.fromGroup) { catOverride[url] = toGroup; persistLocal(); }
       saveOrder();
       renderGroups();
+      publishSilent();
     }
   }
   document.addEventListener('pointerup', endDrag, true);
@@ -811,6 +844,7 @@
   });
 
   wireShareDialog();
+  fetch('/api/ping?h=' + encodeURIComponent(location.host), { cache: 'no-store' }).catch(function () {});
   fetch('/api/promote', { cache: 'no-store' })
     .then(function (r) { return r.json(); })
     .then(function (d) { promotePending = (d && d.pending) || []; })
