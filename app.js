@@ -410,6 +410,27 @@
     return span;
   }
 
+  /* Promote (固化) — request a page be made permanent */
+  var promotePending = [];
+  function isPromoted(url) { return promotePending.indexOf(url) >= 0; }
+  function requestPromote(s, btn) {
+    var key = getKey(false);
+    if (!key) return;
+    btn.disabled = true;
+    btn.textContent = '标记中… · Marking';
+    fetch('/api/promote', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 'x-dash-key': key },
+      body: JSON.stringify({ url: s.url, action: 'request' })
+    }).then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (b) {
+        if (b && b.pending) promotePending = b.pending;
+        else if (!isPromoted(s.url)) promotePending.push(s.url);
+        renderGroups();
+      })
+      .catch(function () { btn.disabled = false; btn.textContent = '固化 · Promote'; });
+  }
+
   function makeCard(s, effGroup) {
     var hidden = isHidden(s.url);
     var a = el('div', 'site-card reveal');
@@ -426,6 +447,20 @@
     /* lifecycle chip (TEMP / STABLE) */
     var chip = lifeChip(s);
     if (chip) top.appendChild(chip);
+
+    /* 固化 · Promote — only for temp pages; turns the link permanent */
+    if (s.status === 'temp') {
+      var pending = isPromoted(s.url);
+      var pbtn = el('button', 'life-promote' + (pending ? ' is-pending' : ''),
+        pending ? '待固化 · Pending' : '固化 · Promote');
+      pbtn.type = 'button';
+      pbtn.disabled = pending;
+      pbtn.title = pending
+        ? '已发送固化请求，等我处理 · request sent, waiting for the agent'
+        : '固化：把这个临时页变成永久（同一链接不再过期）· make this link permanent';
+      pbtn.addEventListener('click', function (e) { e.stopPropagation(); requestPromote(s, pbtn); });
+      top.appendChild(pbtn);
+    }
 
     var right = el('div', 'card-top-right');
 
@@ -689,7 +724,11 @@
   });
 
   wireShareDialog();
-  loadServerLayout().then(function () { renderGroups(); });
+  fetch('/api/promote', { cache: 'no-store' })
+    .then(function (r) { return r.json(); })
+    .then(function (d) { promotePending = (d && d.pending) || []; })
+    .catch(function () {})
+    .then(function () { loadServerLayout().then(function () { renderGroups(); }); });
 
   var empty = document.getElementById('empty-note');
   if (empty && sites.length === 0) empty.hidden = false;

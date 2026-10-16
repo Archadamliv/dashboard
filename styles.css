@@ -677,3 +677,15 @@ a.site-name:hover { color: var(--accent); }
   font: inherit; font-size: 0.6rem; color: var(--text); background: var(--surface-2);
   border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 2px 4px;
 }
+
+/* ---- 固化 · Promote button ---- */
+.life-promote {
+  font: inherit; font-size: 0.55rem; font-weight: 700; line-height: 1;
+  color: var(--accent-ink); background: var(--accent);
+  border: 1px solid var(--accent); border-radius: var(--radius-pill);
+  padding: 2px var(--space-2); cursor: pointer; white-space: nowrap;
+}
+.life-promote:hover { filter: brightness(1.1); }
+.life-promote:disabled, .life-promote.is-pending {
+  color: var(--text-faint); background: transparent; border-color: var(--border); cursor: default;
+}
