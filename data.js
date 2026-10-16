@@ -115,11 +115,9 @@ window.SITES = [
     nameZh: "养马岛 · 前期分析（可达 + POI）",
     desc: "Travel-time catchments, population and POI composition (P1).",
     descZh: "等时圈、人口与 POI 构成（P1 养马岛）。",
-    url: "https://oval-share.archadamliv.workers.dev/p1-yangma-catchment-oval/",
+    url: "https://oval-library.pages.dev/p/p1-yangma-catchment-oval/",
     group: "library",
-    status: "temp",
-    expires: "2026-10-23",
-    src: "oval-share"
+    status: "stable"
   },
   {
     name: "Catchment Study · T0-1 · Dayun Tiandi",
