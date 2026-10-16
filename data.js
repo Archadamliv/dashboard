@@ -103,6 +103,120 @@ window.SITES = [
     url: "https://tavern-map.pages.dev/",
     group: "research",
     tag: "R"
+  },
+
+  /* ---- Library / 库 ----
+   * New pages land here FIRST; Adam re-files them into Work / Personal /
+   * Ongoing Research from the card menu (Move · 归类).
+   * status: "temp"  → shows a TEMP chip with days left (from `expires`)
+   * status: "stable"→ shows a STABLE chip (no expiry)   */
+  {
+    name: "Catchment & POI Study · P1 · Yangma Island",
+    nameZh: "养马岛 · 前期分析（可达 + POI）",
+    desc: "Travel-time catchments, population and POI composition (P1).",
+    descZh: "等时圈、人口与 POI 构成（P1 养马岛）。",
+    url: "https://oval-share.archadamliv.workers.dev/p1-yangma-catchment-oval/",
+    group: "library",
+    status: "temp",
+    expires: "2026-10-23",
+    src: "oval-share"
+  },
+  {
+    name: "Catchment Study · T0-1 · Dayun Tiandi",
+    nameZh: "T0-1 大运天地 · 可达研究",
+    desc: "Catchment study for Dayun Tiandi (T0-1).",
+    descZh: "大运天地可达性研究（T0-1）。",
+    url: "https://oval-share.archadamliv.workers.dev/t0-1-catchment-brand/",
+    group: "library",
+    status: "temp",
+    expires: "2026-10-23",
+    src: "oval-share"
+  },
+  {
+    name: "T0-1 Dayun Tiandi · Catchment & POI (Phase 1)",
+    nameZh: "T0-1 大运天地 · 阶段一（可达 + POI）",
+    desc: "Catchment and POI study, phase 1.",
+    descZh: "等时圈与 POI 构成研究（阶段一）。",
+    url: "https://oval-share.archadamliv.workers.dev/t0-1-dayun-tiandi-phase1/",
+    group: "library",
+    status: "temp",
+    expires: "2026-10-30",
+    src: "oval-share"
+  },
+  {
+    name: "Resort Trends · S01 (OVAL template)",
+    nameZh: "度假酒店趋势研究 · S01",
+    desc: "Resort & hospitality trends, rebuilt on the OVAL template.",
+    descZh: "度假酒店趋势研究（OVAL 标准模板版）。",
+    url: "https://oval-share.archadamliv.workers.dev/s01-resort-trends-oval/",
+    group: "library",
+    status: "temp",
+    expires: "2026-10-30",
+    src: "oval-share"
+  },
+  {
+    name: "S02 Case Study Base · Shenzhen MixC World",
+    nameZh: "S02 案例库 · 深圳万象天地",
+    desc: "Case-study base for Shenzhen MixC World (S02).",
+    descZh: "深圳万象天地案例库（S02）。",
+    url: "https://oval-share.archadamliv.workers.dev/s02-mixc-world-base/",
+    group: "library",
+    status: "temp",
+    expires: "2026-10-30",
+    src: "oval-share"
+  },
+  {
+    name: "Culture Economy · Mawan (OVAL template)",
+    nameZh: "文化经济 · 妈湾",
+    desc: "Culture-economy trend study for Mawan, on the OVAL template.",
+    descZh: "妈湾文化经济趋势研究（OVAL 标准模板版）。",
+    url: "https://oval-share.archadamliv.workers.dev/culture-trends-qianhai-oval/",
+    group: "library",
+    status: "temp",
+    expires: "2026-10-30",
+    src: "oval-share"
+  },
+  {
+    name: "City Brand · Six-City Commerce & POI",
+    nameZh: "城市品牌 · 六城商业与 POI 聚合",
+    desc: "Commerce and POI aggregation across six cities.",
+    descZh: "六城商业与 POI 聚合状态。",
+    url: "https://oval-share.archadamliv.workers.dev/city-brand/",
+    group: "library",
+    status: "temp",
+    expires: "2026-10-23",
+    src: "oval-share"
+  },
+  {
+    name: "OVAL 16:9 Layout Demo (InDesign format)",
+    nameZh: "OVAL 16:9 标准版式 demo",
+    desc: "Reference demo of the OVAL 16:9 standard layout.",
+    descZh: "OVAL 标准 16:9 版式参考 demo。",
+    url: "https://oval-share.archadamliv.workers.dev/indd-format-demo/",
+    group: "library",
+    status: "temp",
+    expires: "2026-10-30",
+    src: "oval-share"
+  },
+  {
+    name: "The Institutionalization Playbook · Convivial",
+    nameZh: "制度化手册 · Convivial",
+    desc: "Convivial institutionalization playbook (share endpoint).",
+    descZh: "Convivial 制度化手册（分享端点）。",
+    url: "https://convivial-share.archadamliv.workers.dev/convivial-playbook/",
+    group: "library",
+    status: "temp",
+    expires: "2026-10-21",
+    src: "convivial-share"
+  },
+  {
+    name: "Walkable Catchment · Oval Advance v1.1.0",
+    nameZh: "步行可达范围 · Oval Advance v1.1.0",
+    desc: "Walk / jog / scooter / drive catchments over the OSM network.",
+    descZh: "步行 / 慢跑 / 滑板车 / 驾车可达范围（OSM 路网）。",
+    url: "https://ovaladvance-walkable-catchment.pages.dev/",
+    group: "library",
+    status: "stable"
   }
 ];
 
@@ -113,5 +227,6 @@ window.SITES = [
 window.GROUPS = {
   work:     { label: "Work",             labelZh: "工作" },
   personal: { label: "Personal",         labelZh: "私人" },
-  research: { label: "Ongoing Research", labelZh: "发展中" }
+  research: { label: "Ongoing Research", labelZh: "发展中" },
+  library:  { label: "Library",          labelZh: "库" }
 };

@@ -663,3 +663,17 @@ a.site-name:hover { color: var(--accent); }
   .group-count { display: none; }
   .db-card-meta { display: none; }
 }
+
+/* ---- lifecycle chip (TEMP / STABLE) + move control ---- */
+.life {
+  font-size: 0.55rem; font-weight: 700; letter-spacing: 0.02em; line-height: 1;
+  padding: 2px var(--space-2); border-radius: var(--radius-pill);
+  border: 1px solid var(--border); color: var(--text-faint); white-space: nowrap;
+}
+.life.is-temp { color: var(--accent); background: var(--accent-soft); border-color: var(--accent-soft); }
+.life.is-expired { color: #ff8b7a; border-color: rgba(255,139,122,0.45); }
+.ca-move { display: inline-flex; align-items: center; gap: var(--space-1); font-size: 0.6rem; color: var(--text-faint); }
+.ca-move-select {
+  font: inherit; font-size: 0.6rem; color: var(--text); background: var(--surface-2);
+  border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 2px 4px;
+}

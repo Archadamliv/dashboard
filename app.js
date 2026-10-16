@@ -297,6 +297,24 @@
     }
     return k;
   }
+  /* Open a site. Gated origins require a signed owner token (?k=…) which is
+     minted server-side, so the public page never carries any secret. */
+  function openSite(s) {
+    var key = getKey(false);
+    if (!key) { window.open(s.url, '_blank', 'noopener'); return; }
+    fetch('/api/unlock', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 'x-dash-key': key },
+      body: JSON.stringify({ url: s.url })
+    }).then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (b) {
+        var url = (b && b.link) || s.url;
+        var w = window.open(url, '_blank', 'noopener');
+        if (!w) location.href = url;
+      })
+      .catch(function () { window.open(s.url, '_blank', 'noopener'); });
+  }
+
   var shareTarget = null;
   function openShare(s) {
     shareTarget = s;
@@ -368,6 +386,30 @@
     return n;
   }
 
+  /* Lifecycle chip — TEMP · N days left / EXPIRED / STABLE · 已固化 */
+  function daysLeft(iso) {
+    if (!iso) return null;
+    var t = Date.parse(String(iso).length <= 10 ? iso + 'T23:59:59+08:00' : iso);
+    if (!isFinite(t)) return null;
+    return Math.ceil((t - Date.now()) / 86400000);
+  }
+  function lifeChip(s) {
+    if (s.status !== 'temp' && s.status !== 'stable') return null;
+    var cls = 'life', text;
+    if (s.status === 'stable') {
+      text = 'STABLE · 已固化';
+    } else {
+      var d = daysLeft(s.expires);
+      cls += ' is-temp';
+      if (d === null) text = 'TEMP';
+      else if (d < 0) { text = 'EXPIRED · 已过期'; cls += ' is-expired'; }
+      else text = 'TEMP · 剩 ' + d + ' 天';
+    }
+    var span = el('span', cls, text);
+    span.title = (s.src ? 'endpoint: ' + s.src + ' · ' : '') + (s.expires ? 'expires ' + s.expires : 'no expiry');
+    return span;
+  }
+
   function makeCard(s, effGroup) {
     var hidden = isHidden(s.url);
     var a = el('div', 'site-card reveal');
@@ -380,6 +422,10 @@
     var fb = meta ? (meta.label + (meta.labelZh && meta.labelZh !== meta.label ? ' · ' + meta.labelZh : '')) : '';
     if (s.tag) top.appendChild(el('span', 'tag', s.tag));
     else if (fb) top.appendChild(el('span', 'tag', fb));
+
+    /* lifecycle chip (TEMP / STABLE) */
+    var chip = lifeChip(s);
+    if (chip) top.appendChild(chip);
 
     var right = el('div', 'card-top-right');
 
@@ -415,7 +461,11 @@
     nameLink.href = s.url;
     nameLink.target = '_blank';
     nameLink.rel = 'noopener noreferrer';
-    nameLink.addEventListener('click', function (e) { e.stopPropagation(); });
+    nameLink.addEventListener('click', function (e) {
+      e.stopPropagation();
+      e.preventDefault();
+      openSite(s);
+    });
     a.appendChild(nameLink);
     if (s.nameZh) a.appendChild(el('p', 'site-name-zh', s.nameZh));
 
@@ -429,8 +479,32 @@
     }
     a.appendChild(details);
 
-    /* actions panel (2nd layer, revealed by ⋯): hide/unhide only */
+    /* actions panel (2nd layer, revealed by ⋯): move + hide/unhide */
     var actions = el('div', 'card-actions');
+
+    /* move to another section — used to re-file Library entries */
+    var moveWrap = el('label', 'ca-move');
+    moveWrap.appendChild(el('span', 'ca-move-label', 'Move · 归类'));
+    var sel = document.createElement('select');
+    sel.className = 'ca-move-select';
+    order.forEach(function (g) {
+      var m = GROUPS[g] || { label: g };
+      var o = document.createElement('option');
+      o.value = g;
+      o.textContent = m.label + (m.labelZh ? ' · ' + m.labelZh : '');
+      if (g === effGroup) o.selected = true;
+      sel.appendChild(o);
+    });
+    sel.addEventListener('click', function (e) { e.stopPropagation(); });
+    sel.addEventListener('change', function (e) {
+      e.stopPropagation();
+      catOverride[s.url] = sel.value;
+      persistLocal();
+      renderGroups();
+    });
+    moveWrap.appendChild(sel);
+    actions.appendChild(moveWrap);
+
     var hb = el('button', 'ca-hide');
     hb.type = 'button';
     hb.textContent = hidden ? 'Unhide · 取消隐藏' : 'Hide · 隐藏';
