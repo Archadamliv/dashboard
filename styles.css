@@ -710,3 +710,10 @@ a.site-name:hover { color: var(--accent); }
   cursor: grabbing;
   transition: none;
 }
+
+/* ---- NEW badge (auto-discovered page) ---- */
+.life.is-new {
+  color: var(--personal);
+  border-color: color-mix(in oklch, var(--personal) 45%, transparent);
+  background: color-mix(in oklch, var(--personal) 12%, transparent);
+}

@@ -479,6 +479,12 @@
     var chip = lifeChip(s);
     if (chip) left.appendChild(chip);
 
+    /* NEW — auto-discovered within the last 7 days */
+    if (s.discoveredAt) {
+      var age = (Date.now() - Date.parse(s.discoveredAt)) / 86400000;
+      if (isFinite(age) && age <= 7) left.appendChild(el('span', 'life is-new', 'NEW'));
+    }
+
     /* 固化 · Promote — only for temp pages; turns the link permanent */
     if (s.status === 'temp') {
       var pending = isPromoted(s.url);
@@ -845,10 +851,37 @@
 
   wireShareDialog();
   fetch('/api/ping?h=' + encodeURIComponent(location.host), { cache: 'no-store' }).catch(function () {});
+
+  /* merge auto-discovered pages (/api/library, fed by tools/discover.mjs) into 「库」 */
+  var libReady = fetch('/api/library', { cache: 'no-store' })
+    .then(function (r) { return r.json(); })
+    .then(function (d) {
+      var have = {};
+      sites.forEach(function (s) { have[s.url] = true; });
+      ((d && d.items) || []).forEach(function (it) {
+        if (!it || !it.url || have[it.url]) return;
+        have[it.url] = true;
+        sites.push({
+          name: it.name || it.url,
+          nameZh: it.nameZh || '',
+          desc: it.desc || '',
+          descZh: it.descZh || '',
+          url: it.url,
+          group: 'library',
+          status: it.status || 'temp',
+          expires: it.expires || undefined,
+          src: it.src || '',
+          discoveredAt: it.discoveredAt
+        });
+      });
+    })
+    .catch(function () {});
+
   fetch('/api/promote', { cache: 'no-store' })
     .then(function (r) { return r.json(); })
     .then(function (d) { promotePending = (d && d.pending) || []; })
     .catch(function () {})
+    .then(function () { return libReady; })
     .then(function () { loadServerLayout().then(function () { renderGroups(); }); });
 
   var empty = document.getElementById('empty-note');
