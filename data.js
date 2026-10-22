@@ -192,8 +192,7 @@ window.SITES = [
     descZh: "OVAL 标准 16:9 版式参考 demo。",
     url: "https://oval-share.archadamliv.workers.dev/indd-format-demo/",
     group: "library",
-    status: "temp",
-    expires: "2026-10-30",
+    status: "stable",
     src: "oval-share"
   },
   {
@@ -215,6 +214,69 @@ window.SITES = [
     url: "https://ovaladvance-walkable-catchment.pages.dev/",
     group: "library",
     status: "stable"
+  },
+  {
+    name: "VA Recipe — Today",
+    nameZh: "今日食谱",
+    desc: "What we are eating today, and what to buy.",
+    descZh: "今天吃什么、要买什么。",
+    url: "https://va-recipe.pages.dev/",
+    group: "library",
+    status: "stable"
+  },
+  {
+    name: "Petronas Twin Towers · Population & Place Catchment",
+    nameZh: "吉隆坡双子塔 · 人口与场所可达",
+    desc: "Population and place catchment around KLCC.",
+    descZh: "吉隆坡市中心人口与场所可达范围。",
+    url: "https://oval-share.archadamliv.workers.dev/kl-twin-towers/",
+    group: "library",
+    status: "temp",
+    src: "oval-share"
+  },
+  {
+    name: "Mawan 25-Hour City",
+    nameZh: "妈湾 25 小时城市",
+    desc: "Mawan 25-hour city study.",
+    descZh: "妈湾 25 小时城市研究。",
+    url: "https://oval-share.archadamliv.workers.dev/mawan-25h-city/",
+    group: "library",
+    status: "temp",
+    expires: "2026-10-27",
+    src: "oval-share"
+  },
+  {
+    name: "Scenecation · Yangma Island",
+    nameZh: "造境度假 · 养马岛",
+    desc: "Scenecation resort concept for Yangma Island.",
+    descZh: "养马岛造境度假概念。",
+    url: "https://oval-share.archadamliv.workers.dev/scenecation-yangma/",
+    group: "library",
+    status: "temp",
+    expires: "2026-10-27",
+    src: "oval-share"
+  },
+  {
+    name: "Catchment Study · P1 Yangma Island (population)",
+    nameZh: "养马岛 · 人口可达（P1）",
+    desc: "Population catchment study for P1.",
+    descZh: "P1 养马岛人口可达研究。",
+    url: "https://oval-share.archadamliv.workers.dev/yangma-population/",
+    group: "library",
+    status: "temp",
+    expires: "2026-10-28",
+    src: "oval-share"
+  },
+  {
+    name: "Oval 16:9 Layout v1.4 (editor)",
+    nameZh: "OVAL 16:9 版式 v1.4（编辑器）",
+    desc: "Editable 16:9 layout demo v1.4.",
+    descZh: "可编辑的 16:9 版式 demo v1.4。",
+    url: "https://oval-share.archadamliv.workers.dev/indd-format-demo-editor/",
+    group: "library",
+    status: "temp",
+    expires: "2026-10-27",
+    src: "oval-share"
   }
 ];
 
