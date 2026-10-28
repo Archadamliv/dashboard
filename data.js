@@ -190,10 +190,9 @@ window.SITES = [
     nameZh: "OVAL 16:9 标准版式 demo",
     desc: "Reference demo of the OVAL 16:9 standard layout.",
     descZh: "OVAL 标准 16:9 版式参考 demo。",
-    url: "https://oval-share.archadamliv.workers.dev/indd-format-demo/",
+    url: "https://oval-library.pages.dev/p/indd-format-demo/",
     group: "library",
-    status: "stable",
-    src: "oval-share"
+    status: "stable"
   },
   {
     name: "The Institutionalization Playbook · Convivial",
@@ -250,10 +249,9 @@ window.SITES = [
     nameZh: "造境度假 · 养马岛",
     desc: "Scenecation resort concept for Yangma Island.",
     descZh: "养马岛造境度假概念。",
-    url: "https://oval-share.archadamliv.workers.dev/scenecation-yangma/",
+    url: "https://oval-library.pages.dev/p/scenecation-yangma-v2/",
     group: "library",
-    status: "temp",
-    expires: "2026-10-27",
+    status: "stable",
     src: "oval-share"
   },
   {
@@ -272,11 +270,9 @@ window.SITES = [
     nameZh: "OVAL 16:9 版式 v1.4（编辑器）",
     desc: "Editable 16:9 layout demo v1.4.",
     descZh: "可编辑的 16:9 版式 demo v1.4。",
-    url: "https://oval-share.archadamliv.workers.dev/indd-format-demo-editor/",
+    url: "https://oval-library.pages.dev/p/indd-format-demo-editor/",
     group: "library",
-    status: "temp",
-    expires: "2026-10-27",
-    src: "oval-share"
+    status: "stable"
   }
 ];
 
